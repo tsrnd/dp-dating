@@ -6,7 +6,7 @@ services:
       dockerfile: ./dockerfiles/DB.Dockerfile
     container_name: dating_db
     ports:
-      - 5432:5432
+      - 5433:5432
     volumes:
       - ./database/database.sql:/docker-entrypoint-initdb.d/database.sql
     environment:
