@@ -1,0 +1,38 @@
+version: '3'
+services:
+  postgres_db:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/DB.Dockerfile
+    container_name: dating_db
+    ports:
+      - 5432:5432
+    volumes:
+      - ./database/database.sql:/docker-entrypoint-initdb.d/database.sql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DBNAME=dating
+      - POSTGRES_PASSWORD=mypass
+      - POSTGRES_PORT=5432
+  s3:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/S3.Dockerfile
+    container_name: dating_s3
+    ports:
+      - 9000:9000
+    command: server /export
+  node_app:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/App.Dockerfile
+    container_name: dating_app
+    ports:
+      - 3001:3001
+    volumes:
+      - ./:/node/dp-dating
+    links:
+      - postgres_db:db
+      - s3:s3
+    env_file:
+      - .env      
