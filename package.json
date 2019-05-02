@@ -1,0 +1,32 @@
+{
+  "name": "dp-dating",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "build": "npm install -g typescript && tsc -p tsconfig.json",
+    "build-development": "concurrently \"tsc -w\" \"nodemon -w './dist/**/*.js' dist/server.js\"",
+    "test": "echo \"comming soon\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@at.github.com:tsrnd/dp-dating.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.16.1",
+    "aws-sdk": "^2.437.0",
+    "config": "^3.1.0",
+    "express": "^4.16.4",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.5.5",
+    "morgan": "^1.9.1",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  }
+}
