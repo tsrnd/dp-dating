@@ -1,0 +1,44 @@
+.modal#profile-modal(tabindex='-1', role='dialog')
+  #profile-modal(role='dialog')
+  .modal-large
+    // Modal content
+    .modal-content#profile-modal-content
+      .modal-header
+        h5.modal-title Profile
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') ×
+      .modal-body
+        .row
+          .col-sm-8
+            .media
+              .media-left
+                img.media-object(src='/static/img/bg-img/31.jpg', style='width: 128px; height: 128px; border-radius: 50%;')
+                input(type='file', style='display: none;')
+              .media-body
+                h2#profile-modal-username.media-heading tester
+                p#profile-modal-email usds@gmail.com
+          .col-sm-4.text-right
+            button.btn.btn-pink(onclick="updateProfile('tester')") Edit profile
+            br
+            small#alert-profile-action.text-success
+          .col-sm-8
+            hr
+            h4 Something
+            .panel.panel-default
+              .panel-body
+                p Hello people! Hola!!!
+                | Implement later
+              .panel-footer
+                span posted 2017-5-27 20:45:01 by nicholaskajoh
+          .col-sm-4
+            hr
+            h4 Friends
+            ul
+              li
+                a
+                  b user1
+                small  	user1@gmail.com
+              li
+                a
+                  b user1
+                small  	user1@gmail.com

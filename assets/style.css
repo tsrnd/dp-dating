@@ -57,6 +57,7 @@ Last Update: Dec 21, 2018
 @import url(css/font-awesome.min.css);
 @import url(css/default-assets/slick.css);
 @import url(css/style.css);
+@import url(css/custom.css);
 /* :: 1.0 Reboot CSS */
 * {
   margin: 0;
