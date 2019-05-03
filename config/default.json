@@ -3,5 +3,10 @@
         "expired": 86400,
         "secret_key": "secret"
     },
-    "default-user-avatar": "/static/images/img-default.png"
+    "default_user_avatar": "/static/images/img-default.png",
+    "api": {
+        "facebook": {
+            "profile_url": "https://graph.facebook.com/me"
+        }
+    }
 }

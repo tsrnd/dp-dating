@@ -10,7 +10,12 @@ const DB_PASSWORD = process.env.DB_PASSWORD || 'mypass';
 const DB = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
     host: DB_HOST,
     port: Number(DB_PORT),
-    dialect: 'postgres'
+    dialect: 'postgres',
+    define:  {
+        'createdAt': 'created_at',
+        'updatedAt': 'updated_at',
+        'deletedAt': 'deleted_at'
+    }
 });
 
 export default DB;
