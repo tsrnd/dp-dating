@@ -1,0 +1,33 @@
+.setting-item a {
+    margin-left: 20px;
+    font-size: 18px;
+    text-transform: capitalize;
+    color: #e90ec8;
+    font-weight: 500;
+    letter-spacing: normal;
+}
+
+#modal-discover-setting {
+    margin: auto;
+}
+
+.btn-pink {
+    background-color: #e90ec8;
+    color: white;
+}
+
+.btn-pink:hover{
+    background-color: #4a043f;
+    color: white;
+}
+
+.modal-large {
+    width: 800px;
+    margin: auto;
+    margin-top: 20px;
+}
+
+#profile-modal-email {
+    margin-left: 10px;
+    margin-top: -10px;
+}

@@ -1,0 +1,54 @@
+header.header-area
+  // Main Header Start
+  .main-header-area
+    .classy-nav-container.breakpoint-off
+      // Classy Menu
+      nav#monaNav.classy-navbar.justify-content-between
+        // Background Curve
+        .bg-curve(style='background-image: url(./static/img/core-img/curve.png);')
+        // Logo
+        a.nav-brand(href='index.html')
+          img(src='./static/img/core-img/logo.png', alt='')
+        // Navbar Toggler
+        .classy-navbar-toggler
+          span.navbarToggler
+            span
+            span
+            span
+        // Menu
+        .classy-menu
+          // Menu Close Button
+          .classycloseIcon
+            .cross-wrap
+              span.top
+              span.bottom
+          // Nav Start
+          .classynav
+            ul#nav
+              li.current-item
+                a(href='./index.html') Home
+              li
+                a.btn-discover(href='') Discover
+              li
+                a#btn-profile(href='') Profile
+              li
+                a#btn-signin(href='') Sign In/ Sign Up
+            // Search Icon
+            .search-icon(data-toggle='modal', data-target='#searchModal')
+              i.icon_search
+          // Nav End
+          // ***** Header Area End *****
+          // ***** Top Search Area Start *****
+          .top-search-area
+            // Search Modal
+            #searchModal.modal.fade(tabindex='-1', role='dialog', aria-hidden='true')
+              .modal-dialog.modal-dialog-centered(role='document')
+                .modal-content
+                  .modal-body
+                    // Close Button
+                    button.btn.close-btn(type='button', data-dismiss='modal')
+                      i.fa.fa-times
+                    // Form
+                    form(action='index.html', method='post')
+                      input.form-control(type='search', name='top-search-bar', placeholder='Search and hit enter...')
+                      button(type='submit') Search

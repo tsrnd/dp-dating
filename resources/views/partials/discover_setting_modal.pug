@@ -1,0 +1,41 @@
+.modal#modal-discover-setting(tabindex='-1', role='dialog')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5.modal-title Discover setting
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') ×
+      .modal-body
+        .text-center
+      form.container
+        //- .form-group
+        //-   label(for='exampleFormControlInput1') Email address
+        //-   input#exampleFormControlInput1.form-control(type='email', placeholder='name@example.com')
+        .form-group
+          label(for='gender-selector') Gender
+          select#gender-selector.form-control
+            option Men
+            option Women
+            option No gender
+        .form-group
+          label(for='age-selector') Age
+          b(style='margin: 0px 10px 0px 20px;')
+          input#age-selector.span2(type='text', value='', data-slider-min='16', data-slider-max='35', data-slider-step='1', data-slider-value='[20,25]')
+          b(style='margin: 0px 0px 0px 10px;')
+          b(style='margin-left: 30px;')#age-select-area [20, 30]
+        .form-group
+          label(for='location-selector') Location
+          select#location-selector.form-control
+            option Da Nang, Viet Nam
+            option Tp. Ho Chi Minh
+            option Ha Noi
+        .form-group
+          label(for='occupation-selector') Occupation
+          select#occupation-selector.form-control
+            option Developer
+            option Doctor
+            option Reviewer
+            option Youtuber
+      .modal-footer
+        button.btn.btn-pink(type='button') Save changes
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Close

@@ -18,5 +18,8 @@ app.set('views', path.join(__dirname, '/../resources/views'));
 
 
 app.use('/api', router);
+app.use('/', (req, res) => {
+    res.render('index', {ss: 'ss'});
+});
 
 export default app;
