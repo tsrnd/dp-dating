@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-export const Client = new Schema({
+const ClientSchema = new Schema({
     name: {
         type: String,
         required: [true, 'Missing name']
@@ -33,4 +33,4 @@ export const Client = new Schema({
     }
 });
 
-export default Client;
+export const Client = mongoose.model('clients', ClientSchema);
