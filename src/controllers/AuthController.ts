@@ -10,24 +10,24 @@ export class AuthController {
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() }).end();
         }
-        var params = req.body;
+        const params = req.body;
         try {
-            var client =  await Client.findOne({
+            const client =  await Client.findOne({
                 'account': params.account,
                 'secret_key': Md5.init(params.secret_key)
             }).select('_id');
             if (!client) {
                 return res.status(404).end();
             }
+
+            // Generate token
+            const configJwt = config.get('jwt');
+            const token = jwt.sign({id: client._id}, configJwt.secret_key, {
+                expiresIn: configJwt.expired
+            });
+            res.json({token: token}).end();
         } catch {
             return res.status(500).end();
         }
-        
-        // Generate token
-        const configJwt = config.get('jwt');
-        var token = jwt.sign({id: client._id}, configJwt.secret_key, {
-            expiresIn: configJwt.expired
-        });
-        res.json({token: token}).end();
     }
 }

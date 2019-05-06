@@ -16,4 +16,4 @@ export const Rules = {
     authUserLogin: [
         check('id').isInt({ gt: 0 })
     ],
-}
+};

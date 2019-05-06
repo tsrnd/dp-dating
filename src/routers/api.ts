@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { Rules } from '../util/rules'
+import { Rules } from '../util/rules';
 import { ClientController } from '../controllers/ClientController';
 import { AuthController } from '../controllers/AuthController';
 import { AuthMiddleWare } from '../util/middleware/auth';

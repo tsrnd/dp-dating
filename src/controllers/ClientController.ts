@@ -12,8 +12,8 @@ export class ClientController {
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() }).end();
         }
-        var params = req.body;
-        var client = await Client.findOne({ name: params.name });
+        const params = req.body;
+        const client = await Client.findOne({ name: params.name });
         if (client) {
             return res.status(400).json({message: 'Name already exist'}).end();
         }
@@ -24,10 +24,10 @@ export class ClientController {
                 email: params.email,
                 secret_key: Md5.init(params.secret_key)
             });
-            var response = {
+            const response = {
                 name: params.name,
                 account: params.account
-            }
+            };
             return res.json(response).end();
         } catch (err) {
             return res.status(500).json({ message: 'Internal Server Error' });
@@ -39,18 +39,18 @@ export class ClientController {
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() }).end();
         }
-        let tokenClient = req.headers.token;
-        let userID = req.body.id;
-        let clientID = jwt.decode(tokenClient, { complete: true }).payload.id;
+        const tokenClient = req.headers.token;
+        const userID = req.body.id;
+        const clientID = jwt.decode(tokenClient, { complete: true }).payload.id;
         try {
             const user = await User.findOne({id: userID});
-            if(!user) {
+            if (!user) {
                 res.status(404).json({message: 'User not found'});
             }
 
             // Generate token
             const configJwt = config.get('jwt');
-            var tokenChat = jwt.sign({user: userID, client: clientID}, configJwt.secret_key, {
+            const tokenChat = jwt.sign({user: userID, client: clientID}, configJwt.secret_key, {
                 expiresIn: configJwt.expired
             });
             res.json({token: tokenChat}).end();
