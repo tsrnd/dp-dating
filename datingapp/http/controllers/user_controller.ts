@@ -56,4 +56,21 @@ const getProfileFB = (req: Request, resp: Response) => {
     });
 };
 
-export { getProfileFB };
+const profileSetting = (req: Request, resp: Response) => {
+    const userID = req.headers.auth_user['id'];
+    console.log(req.body);
+    User.update(req.body, {
+        where: {
+            id: userID
+        }
+    }).then( (result) => {
+        console.log(result, 'asdasdasd');
+        return Http.SuccessResponse(resp, result);
+    })
+    .catch( err => {
+        console.log(err, 'errr');
+        return Http.InternalServerResponse(resp);
+    });
+};
+
+export { getProfileFB, profileSetting };

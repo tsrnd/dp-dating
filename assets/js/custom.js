@@ -1,7 +1,9 @@
 $(document).ready(function() {
     if (localStorage.authToken) {
         authInfo();
+        requestSetting();
     }
+    $('#modal-new-user-setting').modal();
     $('.btn-discover').click(function(e) {
         e.preventDefault();
         $('html,body').animate(
@@ -61,7 +63,31 @@ $(document).ready(function() {
         location.reload(true);
     });
 
-    $('#btn-profile-setting').click(e => {});
+    $('#btn-profile-setting').click(e => {
+        $.post({
+            url: '/api/profile/setting',
+            data: {
+                gender: $('#gender-profile-setting').val(),
+                age: $('#age-profile-setting').val(),
+                location: $('#location-profile-setting').val(),
+                occupation: $('#occupation-profile-setting').val(),
+                income_level: $('#income-level-profile-setting').val(),
+                ethnic: $('#ethnic-profile-setting').val()
+            },
+            success: resp => {
+                $('#modal-new-user-setting').modal('hide');
+                $('html,body').animate(
+                    {
+                        scrollTop: $('.discover-area').offset().top
+                    },
+                    'slow'
+                );
+            },
+            error: resp => {
+                alert('Internal server error! Please try again later.')
+            }
+        })
+    });
 });
 
 function checkLoginState() {
@@ -76,7 +102,11 @@ function checkLoginState() {
                     localStorage.authToken = JSON.stringify(resp.token);
                     localStorage.authInfo = JSON.stringify(resp.user);
                     authInfo();
+                    requestSetting();
                     $('#modal-login').modal('hide');
+                    setTimeout( () => {
+
+                    }, 500);
                     if (resp.is_new) {
                         $('#modal-new-user-setting').modal();
                     }
