@@ -7,10 +7,11 @@
         "sourceMap": true,
         "target": "es6",
         "outDir": "./dist",
-        "baseUrl": "./src"
+        "baseUrl": "./"
     },
     "include": [
-        "src/**/*.ts"
+        "datingapp/**/*.ts",
+        "chattingapp/**/*.ts"
     ],
     "exclude": [
         "node_modules"

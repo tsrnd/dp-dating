@@ -1,14 +1,21 @@
 version: '3'
 services:
-  postgres_db:
+  chatting_db:
     build:
       context: .
-      dockerfile: ./dockerfiles/DB.Dockerfile
+      dockerfile: ./dockerfiles/Mongodb.Dockerfile
+    container_name: chatting_db
+    ports:
+      - 27017:27017
+  dating_db:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Postgres.Dockerfile
     container_name: dating_db
     ports:
       - 5433:5432
     volumes:
-      - ./database/database.sql:/docker-entrypoint-initdb.d/database.sql
+      - ./datingapp/database/database.sql:/docker-entrypoint-initdb.d/database.sql
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_DBNAME=dating
@@ -22,17 +29,35 @@ services:
     ports:
       - 9000:9000
     command: server /export
-  node_app:
+  dating_app:
     build:
       context: .
-      dockerfile: ./dockerfiles/App.Dockerfile
+      dockerfile: ./dockerfiles/DatingApp.Dockerfile
     container_name: dating_app
     ports:
       - 3001:3001
     volumes:
-      - ./:/node/dp-dating
+      - ./datingapp/:/node/dp-dating/datingapp
+      - ./node_modules/:/node/dp-dating/node_modules
     links:
-      - postgres_db:db
+      - dating_db:db
       - s3:s3
     env_file:
-      - .env      
+      - .env   
+    command: npm run build-dating-dev
+  chatting_app:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/ChattingApp.Dockerfile
+    container_name: chatting_app
+    ports:
+      - 3002:3002
+    volumes:
+      - ./chattingapp/:/node/dp-dating/chattingapp
+      - ./node_modules/:/node/dp-dating/node_modules
+    links:
+      - chatting_db:db
+      - s3:s3
+    env_file:
+      - .env   
+    command: npm run build-chatting-dev  

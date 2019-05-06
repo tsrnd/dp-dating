@@ -2,11 +2,10 @@
   "name": "dp-dating",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/server.js",
   "scripts": {
-    "start": "node dist/server.js",
     "build": "npm install -g typescript && tsc -p tsconfig.json",
-    "build-development": "concurrently \"tsc -w\" \"nodemon -w './dist/**/*.js' dist/server.js\"",
+    "build-dating-dev": "concurrently \"tsc -w\" \"nodemon -w './dist/datingapp/**/*.js' dist/datingapp/server.js\"",
+    "build-chatting-dev": "concurrently \"tsc -w\" \"nodemon -w './dist/chattingapp/**/*.js' dist/chattingapp/server.js\"",
     "test": "echo \"comming soon\""
   },
   "repository": {
@@ -37,7 +36,9 @@
     "pg-hstore": "^2.3.2",
     "pug": "^2.0.3",
     "request": "^2.88.0",
-    "sequelize": "^5.8.2"
+    "sequelize": "^5.8.2",
+    "mongoose": "^5.5.5",
+    "socket.io": "^2.2.0"
   },
   "devDependencies": {
     "nodemon": "^1.18.10"
