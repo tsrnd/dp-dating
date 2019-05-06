@@ -26,12 +26,13 @@ header.header-area
           .classynav
             ul#nav
               li.current-item
-                a(href='./index.html') Home
+                a(href='/') Home
               li
                 a.btn-discover(href='') Discover
-              li
-                a#btn-profile(href='') Profile
-              li
+              //- li
+              //-   a#btn-profile(href='') Profile
+              li#auth-info
+                //- div.sigin
                 a#btn-signin(href='') Sign In/ Sign Up
             // Search Icon
             .search-icon(data-toggle='modal', data-target='#searchModal')
