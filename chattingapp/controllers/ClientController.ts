@@ -2,17 +2,18 @@ import { Client } from '../models/Client';
 import { validationResult } from 'express-validator/check';
 import { Md5 } from 'md5-typescript';
 import { Request, Response } from 'express';
+import * as Http from '../util/http';
 
 export class ClientController {
     public async create(req: Request, res: Response, next: any) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() }).end();
+            return Http.BadRequestResponse(res, { errors: errors.array() });
         }
         const params = req.body;
-        const client = await Client.findOne({ name: params.name });
+        const client = await Client.findOne({ account: params.account });
         if (client) {
-            return res.status(400).json({message: 'Name already exist'}).end();
+            return Http.BadRequestResponse(res, {message: 'Account already exist'});
         }
         try {
             await Client.create({
@@ -25,9 +26,9 @@ export class ClientController {
                 name: params.name,
                 account: params.account
             };
-            return res.json(response).end();
+            return Http.SuccessResponse(res, response);
         } catch (err) {
-            return res.status(500).json({ message: 'Internal Server Error' });
+            return Http.InternalServerResponse(res);
         }
     }
 }
