@@ -23,7 +23,7 @@ export class AuthController {
             }
 
              // Generate token
-            const configJwt = config.get('jwt');
+            const configJwt = config.get('chat_app.jwt');
             const token = jwt.sign({id: client._id}, configJwt.secret_key, {
                 expiresIn: configJwt.expired
             });
