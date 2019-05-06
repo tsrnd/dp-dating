@@ -13,7 +13,7 @@ const getProfileFB = (req: Request, resp: Response) => {
         url: config.get('api.facebook.profile_url'),
         method: 'GET',
         qs: {
-            fields: 'id,name',
+            fields: 'id,name,picture.width(300).height(300)',
             access_token: req.body.access_token
         }
     };
@@ -28,17 +28,22 @@ const getProfileFB = (req: Request, resp: Response) => {
                 }
             });
             if (socialUser) {
+                const userProfile = await User.findByPk(socialUser.dataValues.user_id, {
+                    attributes: ['id', 'username', 'nickname', 'profile_picture', 'age', 'gender', 'location', 'income_level', 'occupation', 'ethnic']
+                });
                 resp.json({
                     token: generateToken(socialUser.dataValues.user_id),
+                    user: userProfile.dataValues,
                     is_new: false
                 });
             } else {
                 try {
-                    const newUser = await User.create({username: 'facebook' + profile.id});
+                    const newUser = await User.create({username: 'fb.' + profile.id, nickname: profile.name, profile_picture: profile.picture.data.url});
                     SocialUser.create({social_id: profile.id, social_type: 'facebook', user_id: newUser.id});
                     FacebookUsers.create({id: profile.id, access_token: req.body.access_token});
                     resp.json({
                         token: generateToken(newUser.id),
+                        user: newUser,
                         is_new: true
                     });
                 } catch (error) {
@@ -51,4 +56,8 @@ const getProfileFB = (req: Request, resp: Response) => {
     });
 };
 
-export { getProfileFB };
+const profileSetting = (req: Request, resp: Response)  => {
+
+};
+
+export { getProfileFB, profileSetting };
