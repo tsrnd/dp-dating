@@ -1,0 +1,48 @@
+.modal#modal-new-user-setting(tabindex='-1' role='dialog', data-backdrop="static" data-keyboard="false")
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5.modal-title Profile setting
+        //- button.close(type='button', data-dismiss='modal', aria-label='Close')
+        //-   span(aria-hidden='true') ×
+      .modal-body
+        .text-center
+      form.container
+        .form-group
+          label(for='gender-selector') Gender
+          select#gender-selector.form-control
+            option Men
+            option Women
+            option No gender
+        .form-group
+          label(for='age-selector') Age
+          select#age-selector.form-control
+            - var n = 16;
+              while n < 41
+                option=n++
+        .form-group
+          label(for='location-selector') Location
+          select#location-selector.form-control
+            option Da Nang, Viet Nam
+            option Tp. Ho Chi Minh
+            option Ha Noi
+        .form-group
+          label(for='occupation-selector') Occupation
+          select#occupation-selector.form-control
+            option Developer
+            option Doctor
+            option Reviewer
+            option Youtuber
+        .form-group
+          label(for='occupation-selector') Income Level
+          select#occupation-selector.form-control
+            option Less than 5 million VND
+            option From 5 to 10 million VND
+            option From 10 to 20 million VND
+            option Over 20 million VND
+        .form-group
+          label(for='occupation-selector') Ethnic
+          input#occupation-selector.form-control(type='text')
+      .modal-footer
+        button.btn.btn-pink#btn-profile-setting(type='button') Save changes
+        //- button.btn.btn-secondary(type='button', data-dismiss='modal') Close
