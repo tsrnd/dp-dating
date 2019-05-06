@@ -1,0 +1,23 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+    title Dating App
+    link(rel='icon', href='./static/img/core-img/favicon.ico')
+    link(rel='stylesheet', href='/static/style.css')
+    link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/css/bootstrap-slider.min.css')
+  body
+    // Preloader
+    #preloader
+      .wrapper
+        .cssload-loader
+    include ./partials/header.pug
+    include ./partials/welcome_slide.pug
+    include ./partials/discover.pug
+    include ./partials/login_modal.pug
+    include ./partials/discover_setting_modal.pug
+    include ./partials/profile_modal.pug
+    include ./partials/script.pug
+    

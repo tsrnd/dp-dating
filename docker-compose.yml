@@ -1,0 +1,65 @@
+version: '3'
+services:
+  chatting_db:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Mongodb.Dockerfile
+    container_name: chatting_db
+    ports:
+      - 27017:27017
+  dating_db:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Postgres.Dockerfile
+    container_name: dating_db
+    ports:
+      - 5433:5432
+    volumes:
+      - ./datingapp/database/database.sql:/docker-entrypoint-initdb.d/database.sql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DBNAME=dating
+      - POSTGRES_PASSWORD=mypass
+      - POSTGRES_PORT=5432
+  s3:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/S3.Dockerfile
+    container_name: dating_s3
+    ports:
+      - 9000:9000
+    command: server /export
+  dating_app:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/DatingApp.Dockerfile
+    container_name: dating_app
+    ports:
+      - 3001:3001
+    volumes:
+      - ./datingapp/:/node/dp-dating/datingapp
+      - ./node_modules/:/node/dp-dating/node_modules
+      - ./assets/:/node/dp-dating/assets
+      - ./resources/:/node/dp-dating/resources
+    links:
+      - dating_db:db
+      - s3:s3
+    env_file:
+      - .env   
+    command: npm run build-dating-dev
+  chatting_app:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/ChattingApp.Dockerfile
+    container_name: chatting_app
+    ports:
+      - 3002:3002
+    volumes:
+      - ./chattingapp/:/node/dp-dating/chattingapp
+      - ./node_modules/:/node/dp-dating/node_modules
+    links:
+      - chatting_db:db
+      - s3:s3
+    env_file:
+      - .env   
+    command: npm run build-chatting-dev  
