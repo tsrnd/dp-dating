@@ -7,6 +7,10 @@ const ClientSchema = new Schema({
         type: String,
         required: [true, 'Missing name']
     },
+    email: {
+        type: String,
+        require: [true, 'Missing email']
+    },
     account: {
         type: String,
         minlength: [4, 'Account shout NOT be shooter than 4 characters'],
@@ -30,6 +34,7 @@ const ClientSchema = new Schema({
     },
     deleted_at: {
         type: Date,
+        default: undefined
     }
 });
 
