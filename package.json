@@ -2,10 +2,11 @@
   "name": "dp-dating",
   "version": "1.0.0",
   "description": "",
+  "main": "dist/server.js",
   "scripts": {
     "build": "npm install -g typescript && tsc -p tsconfig.json",
-    "build-dating-dev": "concurrently \"tsc -w\" \"nodemon -w './dist/datingapp/**/*.js' dist/datingapp/server.js\"",
-    "build-chatting-dev": "concurrently \"tsc -w\" \"nodemon -w './dist/chattingapp/**/*.js' dist/chattingapp/server.js\"",
+    "build-dating-dev": "concurrently \"tsc -w\" \"nodemon -w './dist/**/*.js' dist/server.js\"",
+    "build-chatting-dev": "concurrently \"tsc -w\" \"nodemon -w './dist/**/*.js' dist/server.js\"",
     "test": "echo \"comming soon\""
   },
   "repository": {

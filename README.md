@@ -26,7 +26,8 @@ docker-compose up --build -d
 
 - Fresh logs
 ```
-docker logs -f node_app
+docker logs -f dating_app --tail=100
+docker logs -f chatting_app --tail=100
 ```
 
 ### Unit testing

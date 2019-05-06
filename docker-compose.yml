@@ -39,6 +39,8 @@ services:
     volumes:
       - ./datingapp/:/node/dp-dating/datingapp
       - ./node_modules/:/node/dp-dating/node_modules
+      - ./assets/:/node/dp-dating/assets
+      - ./resources/:/node/dp-dating/resources
     links:
       - dating_db:db
       - s3:s3

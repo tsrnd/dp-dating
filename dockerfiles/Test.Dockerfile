@@ -1,10 +1,10 @@
 FROM node:10.15.3-alpine
 
-RUN mkdir -p node/dp-cars-club
+RUN mkdir -p node/dp-dating
 
-ENV DIR node/dp-cars-club
+ENV DIR node/dp-dating
 
-ADD ./ node/dp-cars-club
+ADD ./ node/dp-dating
 
 WORKDIR ${DIR}
 
