@@ -1,12 +1,12 @@
 import * as express from 'express';
-import DBConnection from '../util/db';
-
+import { Rules } from '../util/rules';
+import { ClientController } from '../controllers/ClientController';
 class APIRouter {
     private router: express.Router;
-
+    private ClientController: ClientController;
     constructor() {
         this.router = express.Router();
-
+        this.ClientController = new ClientController;
         this.setupHandler();
     }
 
@@ -14,6 +14,7 @@ class APIRouter {
         this.router.get('/', (req, res) => {
             res.end(JSON.stringify({ msg: 'welcome' }));
         });
+        this.router.post('/auth/register', Rules.createClient, this.ClientController.create);
     };
 
     getRouter = () => {
