@@ -84,7 +84,12 @@ $(document).ready(function() {
             },
             error: resp => {
                 if (resp.status === 400) {
-                    alert('Invalid request! Please try again');
+                    let errors = resp.responseJSON.errors;
+                    errors.forEach(element => {
+                        $('#err-' + element.param)
+                            .html(element.msg)
+                            .show();
+                    });
                 } else {
                     alert('Internal server error! Please try again later.')
                 }

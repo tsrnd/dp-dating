@@ -63,7 +63,7 @@ const profileSetting = (req: Request, resp: Response) => {
     const userID = req.headers.auth_user['id'];
     const err =  validationResult(req);
     if (!err.isEmpty()) {
-        return Http.BadRequestResponse(resp, {err: 'Invalid request!'});
+        return Http.BadRequestResponse(resp, {errors: err.array()});
     }
     User.update(req.body, {
         where: {
