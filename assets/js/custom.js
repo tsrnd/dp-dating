@@ -3,7 +3,6 @@ $(document).ready(function() {
         authInfo();
         requestSetting();
     }
-    $('#modal-new-user-setting').modal();
     $('.btn-discover').click(function(e) {
         e.preventDefault();
         $('html,body').animate(
@@ -84,7 +83,11 @@ $(document).ready(function() {
                 );
             },
             error: resp => {
-                alert('Internal server error! Please try again later.')
+                if (resp.status === 400) {
+                    alert('Invalid request! Please try again');
+                } else {
+                    alert('Internal server error! Please try again later.')
+                }
             }
         })
     });
@@ -104,9 +107,6 @@ function checkLoginState() {
                     authInfo();
                     requestSetting();
                     $('#modal-login').modal('hide');
-                    setTimeout( () => {
-
-                    }, 500);
                     if (resp.is_new) {
                         $('#modal-new-user-setting').modal();
                     }

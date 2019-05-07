@@ -15,7 +15,7 @@ const auth = (req: Request, res: Response, next: () => void) => {
 
     const token = tmps[1];
     try {
-        const decoded = jwt.verify(token, config.get('jwt.secret_key'));
+        const decoded = jwt.verify(token, config.get('dating_app.jwt.secret_key'));
         User.findByPk(decoded['id'], {
             attributes: ['id']
         })
