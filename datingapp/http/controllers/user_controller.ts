@@ -10,12 +10,11 @@ import { FacebookUsers } from '../../models/facebook_user';
 import { validationResult } from 'express-validator/check';
 
 const getProfileFB = (req: Request, resp: Response) => {
-    console.log(config.get('dating_app.api.facebook.profile_url'), '))))))');
     const options = {
         url: config.get('dating_app.api.facebook.profile_url'),
         method: 'GET',
         qs: {
-            fields: 'id,name,picture.width(300).height(300)',
+            fields: 'id,name,picture.width(500).height(500)',
             access_token: req.body.access_token
         }
     };
