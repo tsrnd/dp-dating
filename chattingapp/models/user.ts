@@ -20,6 +20,7 @@ const UserSchema = new Schema({
     },
     img_url: {
         type: String,
+        default: undefined
     },
     active_status: {
         type: Boolean,
@@ -37,6 +38,10 @@ const UserSchema = new Schema({
     updated_at: {
         type: Date,
         default: Date.now,
+    },
+    deleted_at: {
+        type: Date,
+        default: undefined
     }
 });
 

@@ -28,7 +28,7 @@ export let ForbiddenResponse = (
     res.status(403).end(JSON.stringify(data));
 };
 
-export let SuccessResponse = (res: Response, data: any) => {
+export let SuccessResponse = (res: Response, data: any = undefined) => {
     res.status(200).end(JSON.stringify(data));
 };
 

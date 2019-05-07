@@ -24,8 +24,10 @@ class APIRouter {
         });
         this.router.post('/auth/register', Rules.createClient, this.ClientController.create);
         this.router.post('/auth/login', Rules.authClientLogin, this.AuthController.clientLogin);
+
         this.router.use('/clients', this.AuthMiddleWare.authorizationClient);
         this.router.post('/clients/user/login', Rules.authUserLogin, this.ClientController.userLogin);
+        this.router.post('/clients/user', Rules.createUser, this.ClientController.createUser);
     };
 
     getRouter = () => {

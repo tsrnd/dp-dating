@@ -44,17 +44,49 @@ export class ClientController {
         const userID = req.body.id;
         const clientID = jwt.decode(tokenClient, { complete: true }).payload.id;
         try {
-            const user = await User.findOne({id: userID});
-            if (!user) {
+            const userLogin = await User.findOne({id: userID}).select('-_id client_id id nickname img_url');
+            if (!userLogin) {
                 return Http.NotFoundResponse(res, {message: 'User not found'});
             }
 
-             // Generate token
+            // Generate token
             const configJwt = config.get('chat_app.jwt');
-            const tokenChat = jwt.sign({userID: userID, clientID: clientID}, configJwt.secret_key, {
+            const tokenChat = jwt.sign(userLogin, configJwt.secret_key, {
                 expiresIn: configJwt.expired
             });
-            res.json({token: tokenChat}).end();
+            return Http.SuccessResponse(res, {token: tokenChat});
+        } catch (err) {
+            return Http.InternalServerResponse(res, err);
+        }
+    }
+
+    public async createUser(req: Request, res: Response) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return Http.BadRequestResponse(res, { errors: errors.array() });
+        }
+        const tokenClient = req.headers.token;
+        const clientID = jwt.decode(tokenClient, { complete: true }).payload.id;
+        const params = req.body;
+        try {
+            const user = await User.findOne({id: params.id});
+            if (user) {
+                return Http.BadRequestResponse(res, {message: 'User already exist'});
+            }
+            const userCreate = {
+                client_id: clientID,
+                id: params.id,
+                nickname: params.nickname,
+                img_url: params.img_url
+            }
+            await User.create(userCreate);
+
+            // Generate token
+            const configJwt = config.get('chat_app.jwt');
+            const tokenChat = jwt.sign(userCreate, configJwt.secret_key, {
+                expiresIn: configJwt.expired
+            });
+            return Http.SuccessResponse(res, {token: tokenChat});
         } catch (err) {
             return Http.InternalServerResponse(res);
         }
