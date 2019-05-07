@@ -8,5 +8,11 @@
         "facebook": {
             "profile_url": "https://graph.facebook.com/me"
         }
+    },
+    "chat_app": {
+        "jwt": {
+            "expired": 86400,
+            "secret_key": "chatting"
+        }
     }
 }
