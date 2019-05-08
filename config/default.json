@@ -1,12 +1,14 @@
 {
-    "jwt": {
-        "expired": 86400,
-        "secret_key": "secret"
-    },
-    "default_user_avatar": "/static/images/img-default.png",
-    "api": {
-        "facebook": {
-            "profile_url": "https://graph.facebook.com/me"
+    "dating_app": {
+        "jwt": {
+            "expired": 86400,
+            "secret_key": "secret"
+        },
+        "default_user_avatar": "/static/images/img-default.png",
+        "api": {
+            "facebook": {
+                "profile_url": "https://graph.facebook.com/me"
+            }
         }
     },
     "chat_app": {
