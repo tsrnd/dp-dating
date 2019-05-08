@@ -1,31 +1,26 @@
 import * as mongoose from 'mongoose';
 
-export interface IUser extends mongoose.Document {
-    nickname: String;
-    active_status: Boolean;
-    user_friends?: any;
+export interface IRoom extends mongoose.Document {
+    type: Number;
+    user_rooms?: any;
     created_at: Date;
     updated_at: Date;
     deleted_at?: Date;
 }
 
 const schema: any = new mongoose.Schema({
-    nickname: {
-        type: String,
-        required: true
+    type: {
+        type: Number,
+        required: true,
+        default: 0
     },
-    active_status: {
-        type: Boolean,
-        enum: [[true, false], 'Type of status not valid'],
-        default: false
-    },
-    user_friends: [
+    user_rooms: [
         {
             _id: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'User'
             },
-            status: Number
+            is_unread: Number
         }
     ],
     created_at: {
@@ -39,4 +34,4 @@ const schema: any = new mongoose.Schema({
     deleted_at: Date
 });
 
-export default mongoose.model<IUser>('User', schema);
+export default mongoose.model<IRoom>('Room', schema);
