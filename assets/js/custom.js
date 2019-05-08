@@ -4,12 +4,7 @@ $(document).ready(function() {
     }
     $('.btn-discover').click(function(e) {
         e.preventDefault();
-        $('html,body').animate(
-            {
-                scrollTop: $('.discover-area').offset().top
-            },
-            'slow'
-        );
+        getDiscoverSetting();
     });
     $('#btn-signin').click(e => {
         e.preventDefault();
@@ -63,6 +58,49 @@ $(document).ready(function() {
 
     $('#btn-profile-setting').click(e => {});
 });
+
+function getDiscoverSetting() {
+    $.ajax({
+        url: '/api/discover/setting',
+        type: 'get',
+        success: res => {
+            console.log(res)
+        },
+        error: res => {
+            if (res.status == 404) {
+                console.log('404')
+            }
+        }
+    })
+}
+
+function discover(request) {
+    $('html,body').animate(
+        {
+            scrollTop: $('.discover-area').offset().top
+        },
+        'slow'
+    );
+    $('#loading-views').fadeOut();
+    // $('.discover-box').each(function(index) {
+    //     $(this).css(
+    //         'background-image',
+    //         'url(https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=1409104845898313&height=500&width=500&ext=1559792512&hash=AeROdJjv7X881vo7)'
+    //     );
+    // });
+
+    $.ajax({
+        url: '/api/users/discover',
+        type: 'get',
+        data: request,
+        success: r => {
+            console.log(r);
+        },
+        error: e => {
+            console.log(e);
+        }
+    });
+}
 
 function checkLoginState() {
     FB.getLoginStatus(function(response) {

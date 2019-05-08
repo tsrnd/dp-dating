@@ -57,3 +57,21 @@ CREATE TABLE IF NOT EXISTS facebook_users
     deleted_at timestamp,
     PRIMARY KEY (id)
 ) WITHOUT OIDS;
+
+CREATE TABLE IF NOT EXISTS discover_settings
+(
+    id serial NOT NULL UNIQUE,
+    user_id INTEGER,
+    request VARCHAR(255),
+    created_at timestamp,
+    updated_at timestamp,
+    deleted_at timestamp,
+    PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+ALTER TABLE discover_setting
+	ADD FOREIGN KEY (user_id)
+	REFERENCES users (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;

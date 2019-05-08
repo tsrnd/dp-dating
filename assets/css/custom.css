@@ -1,38 +1,84 @@
 .setting-item a {
-    margin-left: 20px;
-    font-size: 18px;
-    text-transform: capitalize;
-    color: #e90ec8;
-    font-weight: 500;
-    letter-spacing: normal;
+  margin-left: 20px;
+  font-size: 18px;
+  text-transform: capitalize;
+  color: #e90ec8;
+  font-weight: 500;
+  letter-spacing: normal;
 }
 
 #modal-discover-setting {
-    margin: auto;
+  margin: auto;
 }
 
 .btn-pink {
-    background-color: #e90ec8;
-    color: white;
+  background-color: #e90ec8;
+  color: white;
 }
 
-.btn-pink:hover{
-    background-color: #4a043f;
-    color: white;
+.btn-pink:hover {
+  background-color: #4a043f;
+  color: white;
 }
 
 .modal-large {
-    width: 800px;
-    margin: auto;
-    margin-top: 20px;
+  width: 800px;
+  margin: auto;
+  margin-top: 20px;
 }
 
 #profile-modal-email {
-    margin-left: 10px;
-    margin-top: -10px;
+  margin-left: 10px;
+  margin-top: -10px;
 }
 
 #auth-info a img {
-    width: 30px;
-    height: 30px;
+  width: 30px;
+  height: 30px;
+}
+
+.img-255-255 {
+  width: 255px;
+  height: 255px;
+}
+
+.img-255-525 {
+  width: 255px;
+  height: 525.3px;
+}
+
+.img-540-240 {
+  width: 540px;
+  height: 240.3px;
+}
+
+.discover-box {
+  background-position: center center;
+  background-size: cover;
+  background-color: gray;
+}
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+}
+.lds-dual-ring:after {
+  content: ' ';
+  display: block;
+  width: 46px;
+  height: 46px;
+  margin: 1px;
+  border-radius: 50%;
+  border: 5px solid #e90ec8;
+  border-color: #e90ec8 transparent #e90ec8 transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
