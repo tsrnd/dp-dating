@@ -3,9 +3,10 @@ import { validationResult } from 'express-validator/check';
 import { Md5 } from 'md5-typescript';
 import { Request, Response } from 'express';
 import * as Http from '../util/http';
+import Utils from '../util/utils';
 import * as jwt from 'jsonwebtoken';
-import { User } from '../models/User';
 import * as config from 'config';
+import { User } from '../models/User';
 
 export class ClientController {
     public async create(req: Request, res: Response, next: any) {
@@ -40,23 +41,28 @@ export class ClientController {
         if (!errors.isEmpty()) {
             return Http.BadRequestResponse(res, { errors: errors.array() });
         }
-        const tokenClient = req.headers.token;
-        const userID = req.body.id;
-        const clientID = jwt.decode(tokenClient, { complete: true }).payload.id;
+        let tokenClient: string;
         try {
-            const userLogin = await User.findOne({id: userID}).select('-_id client_id id nickname img_url');
+            tokenClient = Utils.getToken(req);
+        } catch (err) {
+            return Http.UnauthorizedResponse(res);
+        }
+        const decoded: any = jwt.decode(tokenClient, { complete: true });
+        const clientID: string = decoded.payload.id;
+        const userID: Number = req.body.id;
+        try {
+            const userLogin = await User.findOne({client_id: clientID, id: userID}).select('-_id client_id id nickname img_url');
             if (!userLogin) {
                 return Http.NotFoundResponse(res, {message: 'User not found'});
             }
-
-            // Generate token
-            const configJwt = config.get('chat_app.jwt');
-            const tokenChat = jwt.sign(userLogin, configJwt.secret_key, {
-                expiresIn: configJwt.expired
-            });
-            return Http.SuccessResponse(res, {token: tokenChat});
+            try {
+                const tokenChat: string = Utils.jwtGenerateToken(userLogin.toJSON());
+                return Http.SuccessResponse(res, {token: tokenChat});
+            } catch (err) {
+                return Http.InternalServerResponse(res);
+            }
         } catch (err) {
-            return Http.InternalServerResponse(res, err);
+            return Http.InternalServerResponse(res);
         }
     }
 
@@ -65,11 +71,17 @@ export class ClientController {
         if (!errors.isEmpty()) {
             return Http.BadRequestResponse(res, { errors: errors.array() });
         }
-        const tokenClient = req.headers.token;
-        const clientID = jwt.decode(tokenClient, { complete: true }).payload.id;
-        const params = req.body;
+        let tokenClient: string;
         try {
-            const user = await User.findOne({id: params.id});
+            tokenClient = Utils.getToken(req);
+        } catch (err) {
+            return Http.UnauthorizedResponse(res);
+        }
+        const decoded: any = jwt.decode(tokenClient, { complete: true });
+        const clientID: string = decoded.payload.id;
+        const params: any = req.body;
+        try {
+            const user = await User.findOne({client_id: clientID, id: params.id});
             if (user) {
                 return Http.BadRequestResponse(res, {message: 'User already exist'});
             }
@@ -78,14 +90,10 @@ export class ClientController {
                 id: params.id,
                 nickname: params.nickname,
                 img_url: params.img_url
-            }
+            };
             await User.create(userCreate);
 
-            // Generate token
-            const configJwt = config.get('chat_app.jwt');
-            const tokenChat = jwt.sign(userCreate, configJwt.secret_key, {
-                expiresIn: configJwt.expired
-            });
+            const tokenChat: string = Utils.jwtGenerateToken(userCreate);
             return Http.SuccessResponse(res, {token: tokenChat});
         } catch (err) {
             return Http.InternalServerResponse(res);

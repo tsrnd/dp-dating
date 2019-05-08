@@ -7,13 +7,14 @@ import { generateToken } from '../../util/util';
 import DB from '../../util/db';
 import * as config from 'config';
 import { FacebookUsers } from '../../models/facebook_user';
+import { validationResult } from 'express-validator/check';
 
 const getProfileFB = (req: Request, resp: Response) => {
     const options = {
-        url: config.get('api.facebook.profile_url'),
+        url: config.get('dating_app.api.facebook.profile_url'),
         method: 'GET',
         qs: {
-            fields: 'id,name,picture.width(300).height(300)',
+            fields: 'id,name,picture.width(500).height(500)',
             access_token: req.body.access_token
         }
     };
@@ -30,6 +31,8 @@ const getProfileFB = (req: Request, resp: Response) => {
             if (socialUser) {
                 const userProfile = await User.findByPk(socialUser.dataValues.user_id, {
                     attributes: ['id', 'username', 'nickname', 'profile_picture', 'age', 'gender', 'location', 'income_level', 'occupation', 'ethnic']
+                }).catch( err => {
+                    return Http.InternalServerResponse(resp);
                 });
                 resp.json({
                     token: generateToken(socialUser.dataValues.user_id),
@@ -47,13 +50,31 @@ const getProfileFB = (req: Request, resp: Response) => {
                         is_new: true
                     });
                 } catch (error) {
-                    if (error) {
-                        return Http.InternalServerResponse(resp);
-                    }
+                    return Http.InternalServerResponse(resp);
                 }
             }
+        } else {
+            return Http.BadRequestResponse(resp, {err: error});
         }
     });
 };
 
-export { getProfileFB };
+const profileSetting = (req: Request, resp: Response) => {
+    const userID = req.headers.auth_user['id'];
+    const err =  validationResult(req);
+    if (!err.isEmpty()) {
+        return Http.BadRequestResponse(resp, {errors: err.array()});
+    }
+    User.update(req.body, {
+        where: {
+            id: userID
+        }
+    }).then( (result) => {
+        return Http.SuccessResponse(resp, {msg: 'Update profile setting success!'});
+    })
+    .catch( err => {
+        return Http.InternalServerResponse(resp);
+    });
+};
+
+export { getProfileFB, profileSetting };
