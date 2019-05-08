@@ -1,14 +1,8 @@
 import * as mongoose from 'mongoose';
 
-export interface IRoom extends mongoose.Document {
-    type: Number;
-    user_rooms?: any;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at?: Date;
-}
+const Schema = mongoose.Schema;
 
-const schema: any = new mongoose.Schema({
+const RoomSchema = new Schema({
     type: {
         type: Number,
         required: true,
@@ -34,4 +28,4 @@ const schema: any = new mongoose.Schema({
     deleted_at: Date
 });
 
-export default mongoose.model<IRoom>('Room', schema);
+export const Room = mongoose.model('rooms', RoomSchema);

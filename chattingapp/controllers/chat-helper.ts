@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import Room from '../models/room';
-import User from '../models/user';
+import { Room } from '../models/room';
+import { User } from '../models/user';
 import { Types } from 'mongoose';
 import * as config from 'config';
 
@@ -46,15 +46,15 @@ const getFriendsList = async (req: Request, res: Response) => {
                     'user_friends.avatar_url': {
                         $ifNull: [
                             '$avatar_url',
-                            config.get('default_user_avatar')
+                            config.get('dating_app.default_user_avatar')
                         ]
                     }
                 }
             }
         ]);
         const data = await getRoomsAndCheckReadFriendList(users[0])
-        // return res.status(200).end(JSON.stringify(data.user_friends));
-        return data.user_friends
+        return res.status(200).end(JSON.stringify(data.user_friends));
+        // return data.user_friends
     } catch (error) {
         console.error(error);
     }
@@ -95,7 +95,7 @@ const getRoomsAndCheckReadFriendList = async (data: any) => {
                     }
                 },
             ])
-            if (room) {
+            if (room.length >= 1) {
                 data.user_friends[index].room_id = room[0]._id;
                 data.user_friends[index].is_unread = room[0].user_rooms[0].is_unread;
             }
