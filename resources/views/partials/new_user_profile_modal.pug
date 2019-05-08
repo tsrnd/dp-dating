@@ -1,0 +1,54 @@
+.modal#modal-new-user-setting(tabindex='-1' role='dialog', data-backdrop="static" data-keyboard="false")
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5.modal-title Let fill some profile to get dating!
+        //- button.close(type='button', data-dismiss='modal', aria-label='Close')
+        //-   span(aria-hidden='true') ×
+      .modal-body
+        .text-center
+      form.container
+        .form-group
+          label(for='gender-selector') Gender
+          select#gender-profile-setting.form-control
+            option Men
+            option Women
+            option No gender
+          small#err-gender-setting.sml-error
+        .form-group
+          label(for='age-selector') Age
+          select#age-profile-setting.form-control
+            - var n = 16;
+              while n < 41
+                option=n++
+          small#err-age-setting.sml-error
+        .form-group
+          label(for='location-selector') Location
+          select#location-profile-setting.form-control
+            option Da Nang, Viet Nam
+            option Tp. Ho Chi Minh
+            option Ha Noi
+          small#err-location-setting.sml-error
+        .form-group
+          label(for='occupation-selector') Occupation
+          select#occupation-profile-setting.form-control
+            option Developer
+            option Doctor
+            option Reviewer
+            option Youtuber
+          small#err-occupation-setting.sml-error
+        .form-group
+          label(for='income-level') Income Level
+          select#income-level-profile-setting.form-control
+            option Less than 5 million VND
+            option From 5 to 10 million VND
+            option From 10 to 20 million VND
+            option Over 20 million VND
+          small#err-income_level-setting.sml-error
+        .form-group
+          label(for='ethnic') Ethnic
+          input#ethnic-profile-setting.form-control(type='text')
+          small#err-ethnic-setting.sml-error
+      .modal-footer
+        button.btn.btn-pink#btn-profile-setting(type='button') Save changes
+        //- button.btn.btn-secondary(type='button', data-dismiss='modal') Close

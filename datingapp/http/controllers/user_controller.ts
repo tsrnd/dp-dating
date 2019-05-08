@@ -9,14 +9,14 @@ import DB from '../../util/db';
 import * as config from 'config';
 import { FacebookUsers } from '../../models/facebook_user';
 import { UserFriends } from '../../models/user_friend';
-import { identifier } from 'babel-types';
+import { validationResult } from 'express-validator/check';
 
 const getProfileFB = (req: Request, resp: Response) => {
     const options = {
-        url: config.get('api.facebook.profile_url'),
+        url: config.get('dating_app.api.facebook.profile_url'),
         method: 'GET',
         qs: {
-            fields: 'id,name',
+            fields: 'id,name,picture.width(500).height(500)',
             access_token: req.body.access_token
         }
     };
@@ -31,35 +31,51 @@ const getProfileFB = (req: Request, resp: Response) => {
                 }
             });
             if (socialUser) {
+                const userProfile = await User.findByPk(socialUser.dataValues.user_id, {
+                    attributes: ['id', 'username', 'nickname', 'profile_picture', 'age', 'gender', 'location', 'income_level', 'occupation', 'ethnic']
+                }).catch( err => {
+                    return Http.InternalServerResponse(resp);
+                });
                 resp.json({
                     token: generateToken(socialUser.dataValues.user_id),
+                    user: userProfile.dataValues,
                     is_new: false
                 });
             } else {
                 try {
-                    const newUser = await User.create({
-                        username: 'facebook' + profile.id
-                    });
-                    SocialUser.create({
-                        social_id: profile.id,
-                        social_type: 'facebook',
-                        user_id: newUser.id
-                    });
-                    FacebookUsers.create({
-                        id: profile.id,
-                        access_token: req.body.access_token
-                    });
+                    const newUser = await User.create({username: 'fb-' + profile.id, nickname: profile.name, profile_picture: profile.picture.data.url});
+                    SocialUser.create({social_id: profile.id, social_type: 'facebook', user_id: newUser.id});
+                    FacebookUsers.create({id: profile.id, access_token: req.body.access_token});
                     resp.json({
                         token: generateToken(newUser.id),
+                        user: newUser,
                         is_new: true
                     });
                 } catch (error) {
-                    if (error) {
-                        return Http.InternalServerResponse(resp);
-                    }
+                    return Http.InternalServerResponse(resp);
                 }
             }
+        } else {
+            return Http.BadRequestResponse(resp, {err: error});
         }
+    });
+};
+
+const profileSetting = (req: Request, resp: Response) => {
+    const userID = req.headers.auth_user['id'];
+    const err =  validationResult(req);
+    if (!err.isEmpty()) {
+        return Http.BadRequestResponse(resp, {errors: err.array()});
+    }
+    User.update(req.body, {
+        where: {
+            id: userID
+        }
+    }).then( (result) => {
+        return Http.SuccessResponse(resp, {msg: 'Update profile setting success!'});
+    })
+    .catch( err => {
+        return Http.InternalServerResponse(resp);
     });
 };
 
@@ -111,30 +127,8 @@ const addFriend = async (req: Request, res: Response) => {
             return Http.SuccessResponse(res, { msg: 'Added Friend Success.' });
         });
     } catch (error) {
-        console.error(error);
         return Http.InternalServerResponse(res);
     }
 };
 
-const uploadProfileImg = (req: Request, resp: Response) => {
-    const params = {
-        Bucket: 'test-bucket',
-        Body: req.file.buffer,
-        Key: 'users/' + Date.now() + req.file.originalname
-    };
-    S3Handle.S3Client.putObject(params, (err, data) => {
-        // handle error
-        if (err) {
-            console.log('Error', err);
-            return Http.InternalServerResponse(resp);
-        }
-        // success
-        console.log('Uploaded');
-        S3Handle.S3Client.getSignedUrl('getObject', {Bucket: params.Bucket, Key: params.Key}, (err, url) => {
-            console.log(err, url);
-        });
-        return Http.SuccessResponse(resp, { msg: 'Uploaded!' });
-    });
-};
-
-export { getProfileFB, addFriend, uploadProfileImg };
+export { getProfileFB, profileSetting, addFriend };

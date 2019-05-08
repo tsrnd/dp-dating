@@ -41,6 +41,7 @@ services:
       - ./node_modules/:/node/dp-dating/node_modules
       - ./assets/:/node/dp-dating/assets
       - ./resources/:/node/dp-dating/resources
+      - ./config/:/node/dp-dating/config
     links:
       - dating_db:db
       - s3:s3
@@ -57,6 +58,7 @@ services:
     volumes:
       - ./chattingapp/:/node/dp-dating/chattingapp
       - ./node_modules/:/node/dp-dating/node_modules
+      - ./config/:/node/dp-dating/config
     links:
       - chatting_db:db
       - s3:s3

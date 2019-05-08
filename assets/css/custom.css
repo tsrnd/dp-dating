@@ -16,7 +16,7 @@
     color: white;
 }
 
-.btn-pink:hover{
+.btn-pink:hover {
     background-color: #4a043f;
     color: white;
 }
@@ -30,4 +30,67 @@
 #profile-modal-email {
     margin-left: 10px;
     margin-top: -10px;
+}
+
+#auth-info a img {
+    width: 30px;
+    height: 30px;
+}
+
+.sml-error {
+    color: red;
+}
+
+.popup-box {
+    display: none;
+    position: fixed;
+    bottom: 0px;
+    /* left: 17%; */
+    height: 285px;
+    background-color: rgb(237, 239, 244);
+    width: 250px;
+    border: 1px solid #ddd;
+    border-radius: 5px 5px 0px 0px;
+    z-index: 99;
+}
+
+.popup-box .popup-head {
+    background-color: #333;
+    padding: 5px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    border-radius: 4px 4px 0px 0px;
+    clear: both;
+}
+
+.popup-box .popup-head .popup-head-left {
+    float: left;
+}
+
+.popup-box .popup-head .popup-head-right {
+    float: right;
+    opacity: 0.5;
+}
+
+.popup-box .popup-head .popup-head-right a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.popup-box .popup-messages {
+    height: 81%;
+    padding: 5px;
+    background-color: #fff;
+    overflow-y: scroll;
+}
+.popup-messages {
+    vertical-align: bottom;
+}
+
+.popup-input {
+    width: 100%;
+    border: 0px;
+    border-top: 1px solid #ddd;
+    outline: none;
 }
