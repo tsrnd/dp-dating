@@ -1,6 +1,7 @@
 $(document).ready(function() {
     if (localStorage.authToken) {
         authInfo();
+        requestSetting();
     }
     $('.btn-discover').click(function(e) {
         e.preventDefault();
@@ -56,7 +57,40 @@ $(document).ready(function() {
         location.reload(true);
     });
 
-    $('#btn-profile-setting').click(e => {});
+    $('#btn-profile-setting').click(e => {
+        $.post({
+            url: '/api/profile/setting',
+            data: {
+                gender: $('#gender-profile-setting').val(),
+                age: $('#age-profile-setting').val(),
+                location: $('#location-profile-setting').val(),
+                occupation: $('#occupation-profile-setting').val(),
+                income_level: $('#income-level-profile-setting').val(),
+                ethnic: $('#ethnic-profile-setting').val()
+            },
+            success: resp => {
+                $('#modal-new-user-setting').modal('hide');
+                $('html,body').animate(
+                    {
+                        scrollTop: $('.discover-area').offset().top
+                    },
+                    'slow'
+                );
+            },
+            error: resp => {
+                if (resp.status === 400) {
+                    let errors = resp.responseJSON.errors;
+                    errors.forEach(element => {
+                        $('#err-' + element.param)
+                            .html(element.msg)
+                            .show();
+                    });
+                } else {
+                    alert('Internal server error! Please try again later.')
+                }
+            }
+        })
+    });
 });
 
 function getDiscoverSetting() {
@@ -114,6 +148,7 @@ function checkLoginState() {
                     localStorage.authToken = JSON.stringify(resp.token);
                     localStorage.authInfo = JSON.stringify(resp.user);
                     authInfo();
+                    requestSetting();
                     $('#modal-login').modal('hide');
                     if (resp.is_new) {
                         $('#modal-new-user-setting').modal();

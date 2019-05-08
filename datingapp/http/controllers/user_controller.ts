@@ -13,7 +13,7 @@ import { DiscoverSetting } from '../../models/discover_setting';
 
 const getProfileFB = (req: Request, resp: Response) => {
     const options = {
-        url: config.get('api.facebook.profile_url'),
+        url: config.get('dating_app.api.facebook.profile_url'),
         method: 'GET',
         qs: {
             fields: 'id,name,picture.width(500).height(500)',
@@ -47,7 +47,9 @@ const getProfileFB = (req: Request, resp: Response) => {
                             'ethnic'
                         ]
                     }
-                );
+                ).catch(err => {
+                    return Http.InternalServerResponse(resp);
+                });
                 resp.json({
                     token: generateToken(socialUser.dataValues.user_id),
                     user: userProfile.dataValues,
@@ -75,11 +77,11 @@ const getProfileFB = (req: Request, resp: Response) => {
                         is_new: true
                     });
                 } catch (error) {
-                    if (error) {
-                        return Http.InternalServerResponse(resp);
-                    }
+                    return Http.InternalServerResponse(resp);
                 }
             }
+        } else {
+            return Http.BadRequestResponse(resp, { err: error });
         }
     });
 };
@@ -177,4 +179,30 @@ const getUsersDiscover = async (req: Request, res: Response) => {
     }
 };
 
-export { getProfileFB, getUsersDiscover, getUsersDiscoverSetting };
+const profileSetting = (req: Request, resp: Response) => {
+    const userID = req.headers.auth_user['id'];
+    const err = validationResult(req);
+    if (!err.isEmpty()) {
+        return Http.BadRequestResponse(resp, { errors: err.array() });
+    }
+    User.update(req.body, {
+        where: {
+            id: userID
+        }
+    })
+        .then(result => {
+            return Http.SuccessResponse(resp, {
+                msg: 'Update profile setting success!'
+            });
+        })
+        .catch(err => {
+            return Http.InternalServerResponse(resp);
+        });
+};
+
+export {
+    getProfileFB,
+    profileSetting,
+    getUsersDiscover,
+    getUsersDiscoverSetting
+};

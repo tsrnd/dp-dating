@@ -3,6 +3,7 @@ import * as express from 'express';
 import * as exampleController from '../http/controllers/example';
 import * as userController from '../http/controllers/user_controller';
 import * as middleware from '../http/middleware/auth';
+import { profileSettingValidator } from '../util/validate';
 
 const router = express.Router();
 
@@ -25,5 +26,6 @@ router.get(
     middleware.auth,
     userController.getUsersDiscoverSetting
 );
+router.post('/profile/setting', middleware.auth, profileSettingValidator(), userController.profileSetting);
 
 export default router;
