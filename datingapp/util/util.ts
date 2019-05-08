@@ -5,9 +5,9 @@ export const generateToken = (user_id): any => {
     // create a token
     const token = jwt.sign(
         { id: user_id },
-        config.get('jwt.secret_key'),
+        config.get('dating_app.jwt.secret_key'),
         {
-            expiresIn: config.get('jwt.expired')
+            expiresIn: config.get('dating_app.jwt.expired')
         }
     );
     return token;

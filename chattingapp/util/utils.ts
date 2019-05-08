@@ -8,7 +8,7 @@ class Utils {
 
     public getToken (req: Request): string {
         const authorization = req.header('Authorization');
-        if(authorization.startsWith("Bearer ")) {
+        if (authorization.startsWith('Bearer ')) {
             return authorization.substring(7);
         }
         throw new Error('Token invalid');

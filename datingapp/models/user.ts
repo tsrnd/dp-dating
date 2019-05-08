@@ -30,10 +30,7 @@ User.init({
         income_level: {
             type: STRING
         },
-        location_id: {
-            type: INTEGER
-        },
-        address: {
+        location: {
             type: STRING
         },
         occupation: {

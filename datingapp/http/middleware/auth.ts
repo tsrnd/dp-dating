@@ -15,14 +15,16 @@ const auth = (req: Request, res: Response, next: () => void) => {
 
     const token = tmps[1];
     try {
-        const decoded = jwt.verify(token, config.get('jwt.secret_key'));
-        User.findByPk(decoded['id'])
+        const decoded = jwt.verify(token, config.get('dating_app.jwt.secret_key'));
+        User.findByPk(decoded['id'], {
+            attributes: ['id']
+        })
             .then(user => {
                 if (!user) {
                     return Http.UnauthorizedResponse(res);
                 }
                 // set auth id
-                req.headers.auth_user = user;
+                req.headers.auth_user = user.dataValues;
                 return next();
             })
             .catch(err => {

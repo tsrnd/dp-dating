@@ -15,7 +15,7 @@ import * as Http from '../../util/http';
         let decoded;
         try {
             decoded = Utils.jwtVerify(token);
-        } catch(err) {
+        } catch (err) {
             return Http.UnauthorizedResponse(res);
         }
 
