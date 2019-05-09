@@ -46,6 +46,8 @@ services:
       - s3:s3
     env_file:
       - .env   
+    environment:
+      - DATABASE_URL=postgres://postgres:mypass@db:5432/dating
     command: npm run build-dating-dev
   chatting_app:
     build:

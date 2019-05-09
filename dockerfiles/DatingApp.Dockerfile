@@ -15,5 +15,4 @@ WORKDIR ${DIR}
 
 RUN npm install -g concurrently typescript
 
-EXPOSE ${3001}
-
+EXPOSE 3001

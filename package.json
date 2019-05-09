@@ -7,7 +7,8 @@
     "build": "npm install -g typescript && tsc -p tsconfig.json",
     "build-dating-dev": "concurrently \"tsc -w\" \"nodemon -w './dist/**/*.js' dist/server.js\"",
     "build-chatting-dev": "concurrently \"tsc -w\" \"nodemon -w './dist/**/*.js' dist/server.js\"",
-    "test": "echo \"comming soon\""
+    "test": "echo \"comming soon\"",
+    "pg-migrate": "node-pg-migrate -m datingapp/migrations"
   },
   "repository": {
     "type": "git",
@@ -30,7 +31,9 @@
     "express-session": "^1.16.1",
     "express-validator": "^5.3.1",
     "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.5.5",
     "morgan": "^1.9.1",
+    "node-pg-migrate": "^3.20.0",
     "passport": "^0.4.0",
     "passport-facebook": "^3.0.0",
     "pg": "^7.10.0",
@@ -38,7 +41,6 @@
     "pug": "^2.0.3",
     "request": "^2.88.0",
     "sequelize": "^5.8.2",
-    "mongoose": "^5.5.5",
     "socket.io": "^2.2.0"
   },
   "devDependencies": {
