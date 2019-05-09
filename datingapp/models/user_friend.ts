@@ -35,7 +35,7 @@ UserFriends.init({
     },
     { underscored: true, sequelize, modelName: 'user_friends' }
 );
-UserFriends.belongsTo(User,{
+UserFriends.belongsTo(User, {
     foreignKey: {
         name: 'friend_id'
     }

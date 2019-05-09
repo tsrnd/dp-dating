@@ -71,7 +71,7 @@ const getUserProfile = async (req: Request, res: Response) => {
     .catch( err => {
         return Http.InternalServerResponse(res);
     });
-}
+};
 
 const getUserFriend = async (req: Request, res: Response) => {
     const userID = req.headers.auth_user['id'];
@@ -90,7 +90,7 @@ const getUserFriend = async (req: Request, res: Response) => {
         .catch( err => {
             return Http.InternalServerResponse(res);
         });
-    }
+    };
 
 const profileSetting = (req: Request, resp: Response) => {
     const userID = req.headers.auth_user['id'];
@@ -109,4 +109,4 @@ const profileSetting = (req: Request, resp: Response) => {
         return Http.InternalServerResponse(resp);
     });
 };
-export { getProfileFB, profileSetting , getUserProfile, getUserFriend};
+export { getProfileFB, profileSetting , getUserProfile, getUserFriend };
