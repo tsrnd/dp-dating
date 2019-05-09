@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS users
     gender VARCHAR(5),
     income_level VARCHAR(100),
     location VARCHAR(100),
-    address VARCHAR(100),
     occupation VARCHAR(255),
     ethnic VARCHAR(255),
     created_at timestamp,
