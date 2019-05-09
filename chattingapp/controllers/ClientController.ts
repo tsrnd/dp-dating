@@ -5,7 +5,6 @@ import { Request, Response } from 'express';
 import * as Http from '../util/http';
 import Utils from '../util/utils';
 import * as jwt from 'jsonwebtoken';
-import * as config from 'config';
 import { User } from '../models/User';
 
 export class ClientController {
