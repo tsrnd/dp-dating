@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users
     id serial NOT NULL UNIQUE,
     username VARCHAR(45),
     nickname VARCHAR(45),
-    profile_picture VARCHAR(255),
+    profile_picture TEXT,
     age smallint,
     gender VARCHAR(5),
     income_level VARCHAR(100),

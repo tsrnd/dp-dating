@@ -23,19 +23,30 @@ function closePopup(id) {
     }
 }
 
+//this is used to close a popup
+function hiddenPopup(id) {
+    popupHeight = $(`#${id}`).css('height');
+    if (popupHeight == '32px') {
+        $(`#${id}`).css('height', '285px');
+    } else {
+        $(`#${id}`).css('height', '32px');
+    }
+}
+
 function register_popup(id, name) {
     for (var iii = 0; iii < popups.length; iii++) {
         //already registered. Bring it to front.
         if (id == popups[iii]) {
             Array.remove(popups, iii);
+            popups.unshift(id);
             calculate_popups();
             return;
         }
     }
-    popups.unshift(id);
+    // popups.unshift(id);
     var element = `
     <div class="popup-box" id="${id}">
-        <div class="popup-head" id="btn-popup-head">
+        <div class="popup-head" id="btn-popup-head" onclick="hiddenPopup(${id});">
             <div class="popup-head-left">${name}</div>
             <div class="popup-head-right">
                 <a href="javascript:closePopup('${id}');">&#10005;</a>
@@ -47,6 +58,7 @@ function register_popup(id, name) {
         <input class="popup-input" type="text" id='input-${id}' />
     </div>`;
     $('body').append(element);
+    popups.unshift(id);
     calculate_popups();
 }
 
@@ -83,7 +95,6 @@ function calculate_popups() {
 
     display_popups();
 }
-
 
 //recalculate when window is loaded and also when window is resized.
 window.addEventListener('resize', calculate_popups);

@@ -12,6 +12,7 @@ $(document).ready(function() {
             'slow'
         );
     });
+    registerFpopup(0, 'Friend List');
     $('#btn-signin').click(e => {
         e.preventDefault();
         $('#modal-login').modal('show');
