@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import { Client } from './Client';
 
 const Schema = mongoose.Schema;
 
@@ -42,6 +43,22 @@ const UserSchema = new Schema({
         type: Date,
         default: undefined
     }
+});
+
+UserSchema.pre('save', async function(next) {
+    let client;
+    try {
+        client = await Client.findOne({ _id: this.client_id});
+    } catch (err) {
+        throw new Error('Client.findOne() error');
+    }
+    client.users.push(this);
+    try {
+        await client.save();
+    } catch (err) {
+        throw new Error('Client.save() error');
+    }
+    next();
 });
 
 export const User = mongoose.model('users', UserSchema);
