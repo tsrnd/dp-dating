@@ -15,5 +15,8 @@ router.use((req: express.Request, res: express.Response, next: () => void) => {
 router.get('/example', exampleController.index);
 router.post('/facebook/profile', userController.getProfileFB);
 router.post('/profile/setting', auth, profileSettingValidator(), userController.profileSetting);
+router.get('/profile',auth, userController.getUserProfile);
+router.get('/user/friend',auth, userController.getUserFriend);
+
 
 export default router;
