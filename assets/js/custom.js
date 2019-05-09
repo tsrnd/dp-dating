@@ -32,11 +32,9 @@ $(document).ready(function() {
     $('#btn-profile').click(e => {
         e.preventDefault();
         $('#profile-modal').modal('toggle');
-        
+        getUserProfile();
+        getListFriend();
     });
-   
-    
-
     window.fbAsyncInit = function() {
         FB.init({
             appId: '2423738151191635',
@@ -132,19 +130,19 @@ function authInfo() {
     $('#auth-info')
         .html(
             `<a href=''>
-            Hi, ${userInfo.username}
+            Hi, ${userInfo.nickname}
             <img class='rounded-circle' src='${
                 userInfo.profile_picture
             }' alt='user-img'>
         </a>
         <ul class="dropdown" id="auth-logout">
-            <li class="dropdown-item"><a href="">Profile</a></li>
+            <li class="dropdown-item"><a id='btn-profile' href='#'>Profile</a></li>
             <li class="dropdown-item"><a href="">Logout</a></li>
         </ul>`
         )
         .show();
 }
-$("#btn-profile").on("click",function(){
+function getUserProfile(){
     $.ajax({
         url: '/api/profile',
         method: "GET",
@@ -188,12 +186,13 @@ $("#btn-profile").on("click",function(){
             alert('Internal server error! Please try again later.');
         }
     })
-})
-$("#btn-profile").on("click",function(){
+}
+function getListFriend(){
     $.ajax({
         url: '/api/user/friend',
         method: "GET",
         success: function (userFriends) {
+            $('#lisfriends').html("");
             userFriends.forEach(function(userFriend){
                 $('#lisfriends').append(`<li>
                 <a><b>${userFriend.user.nickname}</b>
@@ -205,7 +204,7 @@ $("#btn-profile").on("click",function(){
             alert('Internal server error! Please try again later.');
         }
     })
-})
+}
 
 
 

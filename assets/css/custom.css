@@ -52,3 +52,18 @@
     overflow-x: hidden;
     overflow-y: auto 
 }
+
+#auth-logout {
+    left: calc(100% - 360px);
+    top: 75px;
+    height: 100px;
+    
+}
+
+#auth-logout li{
+    position: relative;
+}
+#auth-logout li:hover{
+    position: relative;
+    background-color: #232323
+}
