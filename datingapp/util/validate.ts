@@ -17,6 +17,11 @@ export const Validate = {
             .optional()
             .isInt()
             .withMessage('page should be a integer')
+    ],
+    postDiscoverUser: [
+        check('user_id')
+            .isInt()
+            .withMessage('user_id invalid')
     ]
 };
 

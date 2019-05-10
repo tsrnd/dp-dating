@@ -1,3 +1,4 @@
+import { UserDiscovers } from './../../models/user_discover';
 import { Request, Response } from 'express';
 import * as Http from '../../util/http';
 import { User } from '../../models/user';
@@ -86,14 +87,33 @@ const getProfileFB = (req: Request, resp: Response) => {
     });
 };
 
-const postUsersDiscoverSetting = async () => {};
+const postUsersDiscoverSetting = async (req: Request, resp: Response) => {
+    // handle vaidate later
+    try {
+        await DiscoverSetting.create({
+            user_id: req.headers.auth_user['id'],
+            request: JSON.stringify({
+                min_age: req.body.min_age,
+                gender: req.body.gender,
+                max_age: req.body.max_age,
+                location: req.body.location,
+                occupation: req.body.occupation
+            })
+        });
+        return Http.SuccessResponse(resp, { msg: 'success' });
+    } catch (error) {
+        console.error(error);
+        return Http.InternalServerResponse(resp);
+    }
+};
 
 const getUsersDiscoverSetting = async (req: Request, resp: Response) => {
     try {
         const result = await DiscoverSetting.findOne({
             where: {
                 user_id: req.headers.auth_user['id']
-            }
+            },
+            order: [['id', 'DESC']]
         });
         if (result) {
             return Http.SuccessResponse(
@@ -133,6 +153,26 @@ const getUsersDiscover = async (req: Request, res: Response) => {
             }
         });
     }
+
+    let nonDiscoverList: any;
+    try {
+        nonDiscoverList = await UserDiscovers.findAll({
+            where: {
+                user_id: req.headers.auth_user['id']
+            },
+            attributes: ['user_discover_id'],
+            raw: true
+        });
+    } catch (error) {
+        console.error(error);
+        return Http.InternalServerResponse(res);
+    }
+
+    const nonDiscoverListID = [];
+    nonDiscoverList.forEach((element: any) => {
+        nonDiscoverListID.push(element.user_discover_id);
+    });
+
     discoverCondition.push({
         age: {
             [Op.and]: [
@@ -140,7 +180,12 @@ const getUsersDiscover = async (req: Request, res: Response) => {
                 { [Op.lte]: req.query.max_age }
             ]
         },
-        id: { [Op.notIn]: req.headers.auth_user['id'] }
+        id: {
+            [Op.or]: {
+                [Op.notIn]: req.headers.auth_user['id'],
+                [Op.notIn]: nonDiscoverListID
+            }
+        }
     });
 
     const limit = req.query.limit ? Number(req.query.limit) : 20;
@@ -179,6 +224,37 @@ const getUsersDiscover = async (req: Request, res: Response) => {
     }
 };
 
+const postUserDiscover = async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return Http.BadRequestResponse(res, { errors: errors.array() });
+    }
+
+    let targetUser: any;
+    try {
+        targetUser = await User.findOne({
+            where: { id: req.body.user_id },
+            attributes: ['id']
+        });
+        if (!targetUser) {
+            return Http.NotFoundResponse(res);
+        }
+    } catch (error) {
+        Http.InternalServerResponse(res);
+    }
+
+    try {
+        await UserDiscovers.create({
+            user_discover_id: req.body.user_id,
+            user_id: req.headers.auth_user['id']
+        });
+        return Http.SuccessResponse(res, { msg: 'success' });
+    } catch (error) {
+        console.error(error);
+        return Http.InternalServerResponse(res);
+    }
+};
+
 const profileSetting = (req: Request, resp: Response) => {
     const userID = req.headers.auth_user['id'];
     const err = validationResult(req);
@@ -204,5 +280,7 @@ export {
     getProfileFB,
     profileSetting,
     getUsersDiscover,
-    getUsersDiscoverSetting
+    getUsersDiscoverSetting,
+    postUserDiscover,
+    postUsersDiscoverSetting
 };

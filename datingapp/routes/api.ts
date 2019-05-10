@@ -26,6 +26,22 @@ router.get(
     middleware.auth,
     userController.getUsersDiscoverSetting
 );
-router.post('/profile/setting', middleware.auth, profileSettingValidator(), userController.profileSetting);
+router.post(
+    '/discover/setting',
+    middleware.auth,
+    userController.postUsersDiscoverSetting
+);
+router.post(
+    '/discover/user',
+    middleware.auth,
+    Validate.postDiscoverUser,
+    userController.postUserDiscover
+);
+router.post(
+    '/profile/setting',
+    middleware.auth,
+    profileSettingValidator(),
+    userController.profileSetting
+);
 
 export default router;

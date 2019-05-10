@@ -5,7 +5,7 @@ $(document).ready(function() {
     }
     $('.btn-discover').click(function(e) {
         e.preventDefault();
-        getDiscoverSetting();
+        discover();
     });
     $('#btn-signin').click(e => {
         e.preventDefault();
@@ -86,53 +86,183 @@ $(document).ready(function() {
                             .show();
                     });
                 } else {
-                    alert('Internal server error! Please try again later.')
+                    alert('Internal server error! Please try again later.');
                 }
             }
-        })
+        });
+    });
+
+    $('#btn-discover-apply-setting').click(function(e) {
+        const data = {
+            min_age: $('#age-selector')
+                .val()
+                .split(',')[0],
+            max_age: $('#age-selector')
+                .val()
+                .split(',')[1],
+            location: $('#location-selector').val(),
+            occupation: $('#occupation-selector').val(),
+            gender: $('#gender-selector').val()
+        };
+        $.post({
+            url: '/api/discover/setting',
+            data: data,
+            success: resp => {
+                $('#modal-discover-setting').modal('toggle');
+                discover();
+            },
+            error: e => {
+                console.log(e);
+            }
+        });
     });
 });
 
 function getDiscoverSetting() {
-    $.ajax({
+    return $.ajax({
         url: '/api/discover/setting',
-        type: 'get',
-        success: res => {
-            console.log(res)
-        },
-        error: res => {
-            if (res.status == 404) {
-                console.log('404')
-            }
-        }
-    })
+        type: 'get'
+    });
 }
 
-function discover(request) {
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function discover(scrollRequired) {
+    $('#loading-views').html('<div class="lds-dual-ring"></div>');
     $('html,body').animate(
         {
             scrollTop: $('.discover-area').offset().top
         },
         'slow'
     );
-    $('#loading-views').fadeOut();
-    // $('.discover-box').each(function(index) {
-    //     $(this).css(
-    //         'background-image',
-    //         'url(https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=1409104845898313&height=500&width=500&ext=1559792512&hash=AeROdJjv7X881vo7)'
-    //     );
-    // });
+    let dcvSetting = {};
+    try {
+        dcvSetting = await getDiscoverSetting();
+    } catch (error) {
+        if (error.status == 404) {
+            $('#modal-discover-setting .modal-body .text-center')
+                .html(
+                    `<p class="alert alert-info">The first, you need fill some information for this feature.</p>`
+                )
+                .hide()
+                .show()
+                .delay(3000)
+                .slideUp();
+            $('#modal-discover-setting').modal('show');
+        }
+        return;
+    }
 
-    $.ajax({
-        url: '/api/users/discover',
-        type: 'get',
-        data: request,
-        success: r => {
-            console.log(r);
+    try {
+        dcvSetting.limit = 10;
+        dcvSetting.page = 1;
+        const response = await getUserDiscover(dcvSetting);
+        if (response.results.length > 0) {
+            $('#notifi-opps').hide();
+        } else {
+            $('#notifi-opps').show();
+        }
+        setUsersDiscover(response.results);
+        $('#dis-setting-gender').html(
+            `<i class="fa fa-venus-mars"></i>
+            ${response.req.gender}`
+        );
+        $('#dis-setting-age').html(
+            `${response.req.min_age} - ${response.req.max_age}`
+        );
+        $('#dis-setting-occupation').html(`${response.req.occupation}`);
+        $('#dis-setting-location').html(`${response.req.location}`);
+
+        await sleep(1000);
+        $('#loading-views').html(
+            `<h5 style='font-size: 27px; padding: 12.5px;'>${
+                response.total_count
+            }<small>(matching)</small></h5>`
+        );
+    } catch (error) {
+        console.log(error.res);
+    }
+}
+
+// function discoverBarS
+function setUsersDiscover(users) {
+    $('.discover-box').each(function(index) {
+        if (users[index]) {
+            // console.log(users[index]);
+            let user = users[index];
+            $(this).css('position', 'relative');
+            $(this).css('background-image', `url(${user.profile_picture})`);
+            $(this).find('.hover-text').html(`
+                <h5 style='position: absolute; right: 13px; top: 5px;'><a href='' class='text-light btn-close-discover-item'>x</a></h5>
+                ${user.nickname ? `<h4>${user.nickname}</h4>` : ''}
+                ${user.gender ? `<h6>Gender: ${user.gender}</h6>` : ''}
+                ${user.age ? `<h6>Age: ${user.age}</h6>` : ''}
+                ${
+                    user.occupation
+                        ? `<h6>Occupation: ${user.occupation}</h6>`
+                        : ''
+                }
+                ${user.ethnic ? `<h6>Ethnic: ${user.ethnic}</h6>` : ''}
+                ${user.location ? `<h6>Location: ${user.location}</h6>` : ''}`);
+            $(this)
+                .children('.user-id')
+                .html(user.id);
+            $(this).show();
+
+            $(this).dblclick(function() {
+                $(this).html(`<div class='heart relative-center'></div>`);
+                $(this)
+                    .find('.heart')
+                    .animate({ zoom: '1%', left: '49%', top: '49%' }, 0)
+                    .animate(
+                        { zoom: '100%', left: '30%', top: '35%' },
+                        'normal'
+                    )
+                    .delay(0)
+                    .fadeOut();
+                $(this).fadeOut();
+                postDiscoverItem(user.id);
+                discover();
+            });
+        } else {
+            $(this).hide();
+        }
+    });
+
+    $('.btn-close-discover-item').click(function(e) {
+        e.preventDefault();
+        $(this)
+            .parents('.discover-box')
+            .hide();
+        const userID = $(this)
+            .parents('.discover-box')
+            .find('.user-id')
+            .html();
+        postDiscoverItem(userID);
+    });
+}
+
+function postDiscoverItem(userID) {
+    $.post({
+        url: '/api/discover/user',
+        data: {
+            user_id: userID
+        },
+        success: resp => {
+            discover();
         },
         error: e => {
             console.log(e);
         }
+    });
+}
+function getUserDiscover(request) {
+    return $.ajax({
+        url: '/api/users/discover',
+        type: 'get',
+        data: request
     });
 }
 

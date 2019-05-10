@@ -4,71 +4,86 @@
       .col-12
         .breadcumb--con
           h2.title Discover
-          nav(aria-label='breadcrumb')
-            ol.breadcrumb
-              li.breadcrumb-item
-                a(href='#')
-                  i.fa.fa-venus-mars
-                  |  Men
-              li.breadcrumb-item 18 - 22
-              li.breadcrumb-item Option 1     
-              li.breadcrumb-item.active(aria-current='page') Option 2        
-              li.setting-item
-                a#btn-setting-item(href='')
-                  i.fa.fa-cogs
-                  |  Setting
+          .row
+            .col-sm-8
+              nav(aria-label='breadcrumb')
+                ol.breadcrumb
+                  li.breadcrumb-item
+                    a(href='#')#dis-setting-gender
+                      //- i.fa.fa-venus-mars
+                  li.breadcrumb-item#dis-setting-age
+                  li.breadcrumb-item#dis-setting-location
+                  li.breadcrumb-item#dis-setting-occupation(aria-current='page') 
+                  li.setting-item
+                    a#btn-setting-item(href='')
+                      i.fa.fa-cogs
+                      |  Setting
+            .col-sm-4.text-right#loading-views
+              //- .lds-dual-ring
 section.mona-projects-area.section-padding-80-0.mb-50#discover-list
-  #loading-views.container.text-center
-    .lds-dual-ring
+  //- #loading-views.container.text-center
   .container
+    p#notifi-opps
+      b Opps!
+      |  There are no users that match your requirements. We will send a notification when we had.
     .row.mona-portfolio#discover-users-list
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
         .single-project-area.discover-box.img-255-255
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
-            .hover-text.lds-heart
+            .hover-text
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
         .single-project-area.discover-box.img-255-255
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
         .single-project-area.discover-box.img-255-525
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
         .single-project-area.discover-box.img-255-525
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
       // Single Projects Item
       .col-12.col-sm-6.col-lg-6.single_gallery_item.mb-30
         .single-project-area.discover-box.img-540-240
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
         .single-project-area.discover-box.img-255-525
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
         .single-project-area.discover-box.img-255-525
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
         .single-project-area.discover-box.img-255-255
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
         .single-project-area.discover-box.img-255-255
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
       // Single Projects Item
       .col-12.col-sm-6.col-lg-6.single_gallery_item.mb-30
         .single-project-area.discover-box.img-540-240
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
