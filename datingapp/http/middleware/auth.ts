@@ -32,7 +32,6 @@ const auth = (req: Request, res: Response, next: () => void) => {
                 return Http.InternalServerResponse(res);
             });
     } catch (err) {
-        console.log(err);
         return Http.UnauthorizedResponse(res);
     }
 };

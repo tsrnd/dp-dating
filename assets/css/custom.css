@@ -16,7 +16,7 @@
     color: white;
 }
 
-.btn-pink:hover{
+.btn-pink:hover {
     background-color: #4a043f;
     color: white;
 }
@@ -40,10 +40,114 @@
 .sml-error {
     color: red;
 }
+
+.popup-box {
+    display: none;
+    position: fixed;
+    bottom: 0px;
+    right: 220px;
+    height: 285px;
+    background-color: rgb(237, 239, 244);
+    width: 300px;
+    border: 1px solid rgba(29, 49, 91, 0.3);
+    z-index: 99;
+}
+
+.popup-box .popup-head {
+    background-color: #e83e8c;
+    padding: 5px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    border-radius: 4px 4px 0px 0px;
+    clear: both;
+}
+
+.popup-box .popup-head .popup-head-left {
+    float: left;
+}
+
+.popup-box .popup-head .popup-head-right {
+    float: right;
+    opacity: 0.5;
+}
+
+.popup-box .popup-head .popup-head-right a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.popup-box .popup-messages {
+    height: 81%;
+    padding: 5px;
+    background-color: #fff;
+    overflow-y: scroll;
+}
+.popup-messages {
+    vertical-align: bottom;
+}
+
+.popup-input {
+    width: 100%;
+    border: 0px;
+    border-top: 1px solid #ddd;
+    outline: none;
+}
+
+
+
+.popup-box-friend-list {
+    display: none;
+    position: fixed;
+    bottom: 0px;
+    right: 220px;
+    height: 32px;
+    background-color: rgb(237, 239, 244);
+    width: 200px;
+    border: 1px solid rgba(29, 49, 91, 0.3);
+    z-index: 99;
+}
+
+.popup-box-friend-list .popup-head-friend-list {
+    background-color: #e83e8c;
+    padding: 5px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    border-radius: 4px 4px 0px 0px;
+    clear: both;
+}
+
+.popup-box-friend-list .popup-head-friend-list .popup-head-left-friend-list {
+    float: left;
+}
+
+.popup-box-friend-list .popup-head-friend-list .popup-head-right-friend-list {
+    float: right;
+    opacity: 0.5;
+}
+
+.popup-box-friend-list .popup-head-friend-list .popup-head-right-friend-list a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.popup-box-friend-list .popup-messages-friend-list {
+    height: 81%;
+    padding: 5px;
+    background-color: #fff;
+    overflow-y: scroll;
+}
+
+.popup-messages-friend-list {
+    vertical-align: bottom;
+}
+
 #profile-modal-nickname{
     margin-left: 27px;
     margin-top: 10px;
 }
+
 #profile-modal-username{
     font-weight: bold;
 }
@@ -57,12 +161,13 @@
     left: calc(100% - 360px);
     top: 75px;
     height: 100px;
-    
+    margin-left: 6%;
 }
 
 #auth-logout li{
     position: relative;
 }
+
 #auth-logout li:hover{
     position: relative;
     background-color: #232323
