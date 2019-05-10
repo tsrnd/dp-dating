@@ -1,11 +1,10 @@
 import { Request, Response } from 'express';
-import { Room } from '../models/room';
+import { Room } from '../models/Room';
 import { User } from '../models/User';
 import { Types } from 'mongoose';
 import * as config from 'config';
 import * as Http from '../util/http';
 import Utils from '../util/utils';
-import * as jwt from 'jsonwebtoken';
 
 
 const getFriendsList = async (req: Request, res: Response) => {
