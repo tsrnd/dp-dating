@@ -1,4 +1,5 @@
 import { Model, INTEGER, STRING, TEXT, TIME, SMALLINT } from 'sequelize';
+import { UserFriends } from '../models/user_friend';
 import DB from '../util/db';
 
 const sequelize = DB;
@@ -51,4 +52,5 @@ User.init({
     },
     { sequelize, modelName: 'users' }
 );
+
 

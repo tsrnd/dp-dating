@@ -1,13 +1,19 @@
 import { Request, Response } from 'express';
 import { Room } from '../models/room';
-import { User } from '../models/user';
+import { User } from '../models/User';
 import { Types } from 'mongoose';
 import * as config from 'config';
-
+import * as Http from '../util/http';
+import Utils from '../util/utils';
+import * as jwt from 'jsonwebtoken';
 
 
 const getFriendsList = async (req: Request, res: Response) => {
-    var userID = req.params.userID
+    var token = Utils.getToken(req);
+    var decoded = Utils.jwtVerify(token);
+    var user = await User.findOne({ id: decoded.id }).select('_id');
+    console.log(user._id);
+    var userID = user._id
     try {
         const users = await User.aggregate([
             {
@@ -43,9 +49,9 @@ const getFriendsList = async (req: Request, res: Response) => {
                     'user_friends._id': 1,
                     'user_friends.nickname': 1,
                     'user_friends.active_status': 1,
-                    'user_friends.avatar_url': {
+                    'user_friends.img_url': {
                         $ifNull: [
-                            '$avatar_url',
+                            '$img_url',
                             config.get('dating_app.default_user_avatar')
                         ]
                     }
@@ -53,10 +59,9 @@ const getFriendsList = async (req: Request, res: Response) => {
             }
         ]);
         const data = await getRoomsAndCheckReadFriendList(users[0])
-        return res.status(200).end(JSON.stringify(data.user_friends));
-        // return data.user_friends
+        return Http.SuccessResponse(res, data.user_friends);
     } catch (error) {
-        console.error(error);
+        return Http.InternalServerResponse(res);
     }
 };
 const getRoomsAndCheckReadFriendList = async (data: any) => {
@@ -102,8 +107,7 @@ const getRoomsAndCheckReadFriendList = async (data: any) => {
         }
         return data;
     } catch (error) {
-        console.error(error);
+        return Http.InternalServerResponse(error);
     }
 };
-
 export { getFriendsList };

@@ -4,6 +4,7 @@ CREATE DATABASE dating owner postgres encoding 'utf8';
 DROP TABLE IF EXISTS social_users;
 DROP TABLE IF EXISTS facebook_users;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS user_friends;
 
 CREATE TABLE IF NOT EXISTS users
 (
@@ -57,3 +58,30 @@ CREATE TABLE IF NOT EXISTS facebook_users
     deleted_at timestamp,
     PRIMARY KEY (id)
 ) WITHOUT OIDS;
+
+CREATE TABLE IF NOT EXISTS user_friends
+(
+    id serial NOT NULL UNIQUE,
+    user_id INTEGER,
+    friend_id INTEGER,
+    status smallint,
+    created_at timestamp,
+    updated_at timestamp,
+    deleted_at timestamp,
+    PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+ALTER SEQUENCE user_friends_id_SEQ INCREMENT 1 RESTART 1;
+
+ALTER TABLE user_friends
+	ADD FOREIGN KEY (user_id)
+	REFERENCES users (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+ALTER TABLE user_friends
+	ADD FOREIGN KEY (friend_id)
+	REFERENCES users (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+; 

@@ -11,5 +11,9 @@ export const Rules = {
     authClientLogin: [
         check('account').isLength({min: 4, max: 16}).matches('^[a-z][a-z0-9\_]*$'),
         check('secret_key').isLength({min: 8, max: 16})
+    ],
+
+    authUserLogin: [
+        check('id').isInt({ gt: 0 })
     ]
 };
