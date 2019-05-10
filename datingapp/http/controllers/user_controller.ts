@@ -2,6 +2,7 @@ import { UserDiscovers } from './../../models/user_discover';
 import { Request, Response } from 'express';
 import * as Http from '../../util/http';
 import { User } from '../../models/user';
+import { UserFriends } from '../../models/user_friend';
 import { SocialUser } from '../../models/social_user';
 import * as Httprequest from 'request';
 import { generateToken } from '../../util/util';
@@ -254,6 +255,42 @@ const postUserDiscover = async (req: Request, res: Response) => {
         return Http.InternalServerResponse(res);
     }
 };
+const getUserProfile = async (req: Request, res: Response) => {
+    const userID = req.headers.auth_user['id'];
+    User.findOne({
+        where: {
+            id: userID
+        }
+    })
+        .then(result => {
+            return res.json(result);
+        })
+        .catch(err => {
+            return Http.InternalServerResponse(res);
+        });
+};
+
+const getUserFriend = async (req: Request, res: Response) => {
+    const userID = req.headers.auth_user['id'];
+    UserFriends.findAll({
+        where: {
+            user_id: userID,
+            status: 1
+        },
+        include: [
+            {
+                model: User,
+                where: {}
+            }
+        ]
+    })
+        .then(result => {
+            return res.json(result);
+        })
+        .catch(err => {
+            return Http.InternalServerResponse(res);
+        });
+};
 
 const profileSetting = (req: Request, resp: Response) => {
     const userID = req.headers.auth_user['id'];
@@ -276,11 +313,66 @@ const profileSetting = (req: Request, resp: Response) => {
         });
 };
 
+const addFriend = async (req: Request, res: Response) => {
+    const userID = req.headers.auth_user['id'];
+    try {
+        const friend = await User.findOne({
+            attributes: ['id'],
+            where: { username: req.body.username }
+        });
+        if (friend == undefined) {
+            return Http.NotFoundResponse(res, {
+                msg: 'The user no longer exists.'
+            });
+        }
+        const friendID = friend.dataValues['id'];
+        if (friendID == userID) {
+            return Http.BadRequestResponse(res, {
+                msg: "Can't add friend with your self."
+            });
+        }
+        const isAuthFriend = await UserFriends.findOne({
+            attributes: ['id'],
+            where: {
+                user_id: userID,
+                friend_id: friendID
+            }
+        });
+        if (isAuthFriend) {
+            return Http.SuccessResponse(res, {
+                msg: 'The user has been added earlier.'
+            });
+        }
+        UserFriends.findOne({
+            attributes: ['id'],
+            where: {
+                user_id: friendID,
+                friend_id: userID
+            }
+        }).then(result => {
+            if (result) {
+                result.update({ status: 1 });
+            } else {
+                UserFriends.create({
+                    user_id: userID,
+                    friend_id: friendID
+                });
+            }
+            return Http.SuccessResponse(res, { msg: 'Added Friend Success.' });
+        });
+    } catch (error) {
+        return Http.InternalServerResponse(res);
+    }
+};
+
 export {
     getProfileFB,
     profileSetting,
     getUsersDiscover,
     getUsersDiscoverSetting,
     postUserDiscover,
-    postUsersDiscoverSetting
+    postUsersDiscoverSetting,
+    getUserProfile,
+    getUserFriend,
+    addFriend
 };

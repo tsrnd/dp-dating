@@ -1,8 +1,10 @@
 $(document).ready(function() {
+    registerFpopup(0, 'Friend(4)');
     if (localStorage.authToken) {
         authInfo();
         requestSetting();
     }
+    // register_popup(1, "Nam");
     $('.btn-discover').click(function(e) {
         e.preventDefault();
         discover();
@@ -27,8 +29,9 @@ $(document).ready(function() {
     $('#btn-profile').click(e => {
         e.preventDefault();
         $('#profile-modal').modal('toggle');
+        getUserProfile();
+        getListFriend();
     });
-
     window.fbAsyncInit = function() {
         FB.init({
             appId: '2423738151191635',
@@ -211,6 +214,7 @@ function setUsersDiscover(users) {
                 .html(user.id);
             $(this).show();
 
+            $(this).unbind();
             $(this).dblclick(function() {
                 $(this).html(`<div class='heart relative-center'></div>`);
                 $(this)
@@ -222,8 +226,8 @@ function setUsersDiscover(users) {
                     )
                     .delay(0)
                     .fadeOut();
-                $(this).fadeOut();
                 postDiscoverItem(user.id);
+
                 discover();
             });
         } else {
@@ -297,17 +301,90 @@ function authInfo() {
     $('#auth-info')
         .html(
             `<a href=''>
-            Hi, ${userInfo.username}
+            Hi, ${userInfo.nickname}
             <img class='rounded-circle' src='${
                 userInfo.profile_picture
             }' alt='user-img'>
         </a>
         <ul class="dropdown" id="auth-logout">
-            <li class="dropdown-item"><a href="">Profile</a></li>
-            <li class="dropdown-item"><a href="">Logout</a></li>
+            <li class="dropdown-item" id='btn-profile'><a href=''>Profile</a></li>
+            <li class="dropdown-item" id='btn-logout'><a href="">Logout</a></li>
         </ul>`
         )
         .show();
+}
+function getUserProfile() {
+    $.ajax({
+        url: '/api/profile',
+        method: 'GET',
+        success: function(data) {
+            $('#profile-modal .modal-header').html(
+                `<h5>Profile </h5><span>${data['nickname']}</span>`
+            );
+            $('#profile-avatar').attr('src', data['profile_picture']);
+            // $('#profile-modal-nickname').html(data['nickname']);
+            $('#profile-modal-username').html(data['username']);
+            $('#user-profile').html('');
+            $('#user-profile').append(`
+                    <table class='table table-user-information'>
+                        <tbody>
+                        <tr>
+                            <td>Gender:</td>
+                            <td>${data['gender']}</td>
+                        </tr>
+                        <tr>
+                            <td>Age:</td>
+                            <td>${data['age']}</td>
+                        </tr>
+                        <tr>
+                            <td>Income_level:</td>
+                            <td>${data['income_level']}</td>
+                        </tr>
+                        <tr>
+                            <td>Location:</td>
+                            <td>${data['location']}</td>
+                        </tr>
+                        <tr>
+                            <td>Occupation:</td>
+                            <td>${data['occupation']}</td>
+                        </tr>
+                        <tr>
+                            <td>Ethnic:</td>
+                            <td>${data['ethnic']}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                `);
+            $('#bottom').html(
+                // ` <span> posted ${data['created_at']} by <b>${
+                    // data['nickname']
+                // }</b> </span> `
+            );
+        },
+        error: resp => {
+            alert('Internal server error! Please try again later.');
+        }
+    });
+}
+function getListFriend() {
+    $.ajax({
+        url: '/api/user/friend',
+        method: 'GET',
+        success: function(userFriends) {
+            $('#lisfriends').html('');
+            userFriends.forEach(function(userFriend) {
+                $('#lisfriends').append(`
+                    <li>
+                        <a><b>${userFriend.user.nickname}</b></a>
+                        <small>${userFriend.user.username}</small>
+                    </li>
+                `);
+            });
+        },
+        error: resp => {
+            alert('Internal server error! Please try again later.');
+        }
+    });
 }
 
 function requestSetting() {

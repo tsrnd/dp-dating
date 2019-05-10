@@ -15,6 +15,7 @@ router.use((req: express.Request, res: express.Response, next: () => void) => {
 // routes here
 router.get('/example', exampleController.index);
 router.post('/facebook/profile', userController.getProfileFB);
+
 router.get(
     '/users/discover',
     middleware.auth,
@@ -43,5 +44,14 @@ router.post(
     profileSettingValidator(),
     userController.profileSetting
 );
+router.post(
+    '/profile/setting',
+    middleware.auth,
+    profileSettingValidator(),
+    userController.profileSetting
+);
+router.post('/user/friend', middleware.auth, userController.addFriend);
+router.get('/profile', middleware.auth, userController.getUserProfile);
+router.get('/user/friend', middleware.auth, userController.getUserFriend);
 
 export default router;
