@@ -16,7 +16,7 @@ function closePopup(id) {
     for (var iii = 0; iii < popups.length; iii++) {
         if (id == popups[iii]) {
             Array.remove(popups, iii);
-            $(`#${id}`).css('display', 'none');
+            $(`#${id}`).remove();
             calculate_popups();
             return;
         }

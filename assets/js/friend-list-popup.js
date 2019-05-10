@@ -41,6 +41,10 @@ function registerFpopup(id, name) {
             <div style="clear: both"></div>
         </div>
         <div class="popup-messages-friend-list">
+            <li><a onclick="register_popup(1,'Nam')">Nam</a></li>
+            <li><a onclick="register_popup(2,'Minh')">Minh</a></li>
+            <li><a onclick="register_popup(3,'Na')">Na</a></li>
+            <li><a onclick="register_popup(4,'Tam')">Tam</a></li>
         </div>
     </div>`;
     $('body').append(element);

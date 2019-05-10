@@ -1,9 +1,10 @@
 $(document).ready(function() {
-    registerFpopup(0, 'Chat');
+    registerFpopup(0, 'Friend(4)');
     if (localStorage.authToken) {
         authInfo();
         requestSetting();
     }
+    // register_popup(1, "Nam");
     $('.btn-discover').click(function(e) {
         e.preventDefault();
         $('html,body').animate(
