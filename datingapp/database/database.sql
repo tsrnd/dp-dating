@@ -84,4 +84,8 @@ ALTER TABLE user_friends
 	REFERENCES users (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
+<<<<<<< HEAD
 ;
+=======
+; 
+>>>>>>> 983c0bab07ae028667588cc0d15d6258966f87fe

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import * as Http from '../../util/http';
 import { User } from '../../models/user';
+import { UserFriends } from '../../models/user_friend';
 import { SocialUser } from '../../models/social_user';
 import * as Httprequest from 'request';
 import { generateToken } from '../../util/util';
@@ -8,7 +9,6 @@ import S3Handle from '../../util/aws_s3';
 import DB from '../../util/db';
 import * as config from 'config';
 import { FacebookUsers } from '../../models/facebook_user';
-import { UserFriends } from '../../models/user_friend';
 import { validationResult } from 'express-validator/check';
 
 const getProfileFB = (req: Request, resp: Response) => {
@@ -60,6 +60,38 @@ const getProfileFB = (req: Request, resp: Response) => {
         }
     });
 };
+const getUserProfile = async (req: Request, res: Response) => {
+    const userID = req.headers.auth_user['id'];
+    User.findOne({
+        where: {
+            id: userID
+        }
+    }).then( (result) => {
+        return res.json(result);
+    })
+    .catch( err => {
+        return Http.InternalServerResponse(res);
+    });
+};
+
+const getUserFriend = async (req: Request, res: Response) => {
+    const userID = req.headers.auth_user['id'];
+    UserFriends.findAll({
+        where: {
+            user_id: userID,
+            status: 1
+        },
+        include: [{
+            model: User,
+            where: {}
+        }]
+    }).then( (result) => {
+            return res.json(result);
+        })
+        .catch( err => {
+            return Http.InternalServerResponse(res);
+        });
+    };
 
 const profileSetting = (req: Request, resp: Response) => {
     const userID = req.headers.auth_user['id'];
@@ -131,4 +163,4 @@ const addFriend = async (req: Request, res: Response) => {
     }
 };
 
-export { getProfileFB, profileSetting, addFriend };
+export { getProfileFB, profileSetting , getUserProfile, getUserFriend, addFriend };

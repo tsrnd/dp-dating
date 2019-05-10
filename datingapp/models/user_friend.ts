@@ -1,4 +1,5 @@
 import { Model, INTEGER, STRING, TEXT, TIME, SMALLINT } from 'sequelize';
+import { User } from './user';
 import DB from '../util/db';
 
 const sequelize = DB;
@@ -32,6 +33,10 @@ UserFriends.init({
             type: TIME
         }
     },
-    { sequelize, modelName: 'user_friends' }
+    { underscored: true, sequelize, modelName: 'user_friends' }
 );
-
+UserFriends.belongsTo(User, {
+    foreignKey: {
+        name: 'friend_id'
+    }
+});

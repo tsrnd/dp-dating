@@ -3,6 +3,9 @@ import { validationResult } from 'express-validator/check';
 import { Md5 } from 'md5-typescript';
 import { Request, Response } from 'express';
 import * as Http from '../util/http';
+import Utils from '../util/utils';
+import * as jwt from 'jsonwebtoken';
+import { User } from '../models/User';
 
 export class ClientController {
     public async create(req: Request, res: Response, next: any) {
@@ -27,6 +30,37 @@ export class ClientController {
                 account: params.account
             };
             return Http.SuccessResponse(res, response);
+        } catch (err) {
+            return Http.InternalServerResponse(res);
+        }
+    }
+
+    public async userLogin(req: Request, res: Response) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return Http.BadRequestResponse(res, { errors: errors.array() });
+        }
+        let tokenClient: string;
+        try {
+            tokenClient = Utils.getToken(req);
+        } catch (err) {
+            return Http.UnauthorizedResponse(res);
+        }
+        const decoded: any = jwt.decode(tokenClient, { complete: true });
+        const clientID: string = decoded.payload.id;
+        const userID: Number = req.body.id;
+        try {
+            const userLogin = await User.findOne({client_id: clientID, id: userID}).select('-_id client_id id nickname img_url');
+            if (!userLogin) {
+                return Http.NotFoundResponse(res, {message: 'User not found'});
+            }
+            try {
+                const tokenChat: string = Utils.jwtGenerateToken(userLogin);
+                return Http.SuccessResponse(res, {token: tokenChat});
+            } catch (err) {
+                console.log(err);
+                return Http.InternalServerResponse(res);
+            }
         } catch (err) {
             return Http.InternalServerResponse(res);
         }

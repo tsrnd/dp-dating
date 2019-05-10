@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    registerFpopup(0, 'Chat');
     if (localStorage.authToken) {
         authInfo();
         requestSetting();
@@ -12,7 +13,6 @@ $(document).ready(function() {
             'slow'
         );
     });
-    registerFpopup(0, 'Friend List');
     $('#btn-signin').click(e => {
         e.preventDefault();
         $('#modal-login').modal('show');
@@ -33,8 +33,9 @@ $(document).ready(function() {
     $('#btn-profile').click(e => {
         e.preventDefault();
         $('#profile-modal').modal('toggle');
+        getUserProfile();
+        getListFriend();
     });
-
     window.fbAsyncInit = function() {
         FB.init({
             appId: '2423738151191635',
@@ -58,7 +59,7 @@ $(document).ready(function() {
         fjs.parentNode.insertBefore(js, fjs);
     })(document, 'script', 'facebook-jssdk');
 
-    $('#btn-logout').click(e => {
+    $('#btn-logout').click(() => {
         localStorage.clear();
         location.reload(true);
     });
@@ -87,26 +88,13 @@ $(document).ready(function() {
                 if (resp.status === 400) {
                     let errors = resp.responseJSON.errors;
                     errors.forEach(element => {
-                        $('#err-' + element.param + '-setting')
+                        $('#err-' + element.param)
                             .html(element.msg)
                             .show();
                     });
                 } else {
                     alert('Internal server error! Please try again later.');
                 }
-            }
-        });
-    });
-
-    $('#btn-add-friend').click(e => {
-        $.post({
-            url: '/api/user/friend',
-            data: {
-                username: ''
-            },
-            success: resp => {
-            },
-            error: resp => {
             }
         });
     });
@@ -140,21 +128,89 @@ function checkLoginState() {
 
 function authInfo() {
     userInfo = JSON.parse(localStorage.authInfo);
-    $('#auth-sigin')
+    $('#auth-info')
         .html(
             `<a href=''>
-            Hi, ${userInfo.username}
+            Hi, ${userInfo.nickname}
             <img class='rounded-circle' src='${
                 userInfo.profile_picture
             }' alt='user-img'>
-        </a>`
+        </a>
+        <ul class="dropdown" id="auth-logout">
+            <li class="dropdown-item"><a id='btn-profile' href='#'>Profile</a></li>
+            <li class="dropdown-item"><a href="">Logout</a></li>
+        </ul>`
         )
         .show();
-    $('#auth-signup ul').removeAttr('style');
-    $('#auth-signup ul').append(
-        `<li><a class="text-center" href="">Profile</a></li>
-        <li id="btn-logout"><a class="text-center" href="">Logout</a></li>`
-    );
+}
+function getUserProfile() {
+    $.ajax({
+        url: '/api/profile',
+        method: 'GET',
+        success: function(data) {
+            $('#profile-avatar').attr('src', data['profile_picture']);
+            $('#profile-modal-nickname').html = data['nickname'];
+            $('#profile-modal-username').html = data['username'];
+            $('#user-profile').html('');
+            $('#user-profile')
+                .append(`
+                    <table class='table table-user-information'>\
+                        <tbody>
+                        <tr>
+                            <td>Gender:</td>
+                            <td>${data['gender']}</td>
+                        </tr>
+                        <tr>
+                            <td>Age:</td>
+                            <td>${data['age']}</td>
+                        </tr>
+                        <tr>
+                            <td>Income_level:</td>
+                            <td>${data['income_level']}</td>
+                        </tr>
+                        <tr>
+                            <td>Location:</td>
+                            <td>${data['location']}</td>
+                        </tr>
+                        <tr>
+                            <td>Occupation:</td>
+                            <td>${data['occupation']}</td>
+                        </tr>
+                        <tr>
+                            <td>Ethnic:</td>
+                            <td>${data['ethnic']}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                `);
+            $('#bottom').append(
+                ` <span> posted ${data['created_at']} by <b>${data['nickname']}</b> </span> `
+            );
+        },
+        error: resp => {
+            alert('Internal server error! Please try again later.');
+        }
+    });
+}
+function getListFriend() {
+    $.ajax({
+        url: '/api/user/friend',
+        method: 'GET',
+        success: function(userFriends) {
+            $('#lisfriends').html('');
+            userFriends.forEach(function(userFriend) {
+                $('#lisfriends').append(`
+                    <li>
+                        <a><b>${userFriend.user.nickname}</b></a>
+                        <small>${userFriend.user.username}</small>
+                    </li>
+                `);
+            });
+        },
+        error: resp => {
+            alert('Internal server error! Please try again later.');
+        }
+    });
 }
 
 function requestSetting() {
