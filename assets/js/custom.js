@@ -137,8 +137,8 @@ function authInfo() {
             }' alt='user-img'>
         </a>
         <ul class="dropdown" id="auth-logout">
-            <li class="dropdown-item"><a id='btn-profile' href='#'>Profile</a></li>
-            <li class="dropdown-item"><a href="">Logout</a></li>
+            <li class="dropdown-item" id='btn-profile'><a href=''>Profile</a></li>
+            <li class="dropdown-item" id='btn-logout'><a href="">Logout</a></li>
         </ul>`
         )
         .show();
@@ -154,7 +154,7 @@ function getUserProfile() {
             $('#user-profile').html('');
             $('#user-profile')
                 .append(`
-                    <table class='table table-user-information'>\
+                    <table class='table table-user-information'>
                         <tbody>
                         <tr>
                             <td>Gender:</td>
@@ -183,7 +183,7 @@ function getUserProfile() {
                         </tbody>
                     </table>
                 `);
-            $('#bottom').append(
+            $('#bottom').html(
                 ` <span> posted ${data['created_at']} by <b>${data['nickname']}</b> </span> `
             );
         },
