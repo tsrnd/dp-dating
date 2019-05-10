@@ -76,7 +76,7 @@ const getRoomsAndCheckReadFriendList = async (data: any) => {
                                 'user_rooms': { $elemMatch: { '_id': Types.ObjectId(data.user_friends[index]._id.toString()) } }
                             },
                             {
-                                'type': 1
+                                'type': 0
                             },
                         ]
                     }

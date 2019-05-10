@@ -30,6 +30,15 @@ const UserSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Room'
     }],
+    user_friends: [
+        {
+            _id: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User'
+            },
+            status: Number
+        }
+    ],
     created_at: {
         type: Date,
         default: Date.now

@@ -3,8 +3,6 @@ import Utils from '../utils';
 import { Client } from '../../models/Client';
 import { User } from '../../models/User';
 import * as Http from '../http';
-import * as jwt from 'jsonwebtoken';
-import { Types } from 'mongoose';
 
 export class AuthMiddleWare {
     public async authorizationClient(req: Request, res: Response, next: any) {
