@@ -3,7 +3,7 @@ import { Rules } from '../util/rules';
 import { AuthMiddleWare } from '../util/middleware/auth';
 import { ClientController } from '../controllers/ClientController';
 import { AuthController } from '../controllers/AuthController';
-import * as UserController from '../controllers/users'
+import * as UserController from '../controllers/users';
 class APIRouter {
     private router: express.Router;
     private ClientController: ClientController;

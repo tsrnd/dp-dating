@@ -9,11 +9,10 @@ import * as jwt from 'jsonwebtoken';
 
 
 const getFriendsList = async (req: Request, res: Response) => {
-    var token = Utils.getToken(req);
-    var decoded = Utils.jwtVerify(token);
-    var user = await User.findOne({ id: decoded.id }).select('_id');
-    console.log(user._id);
-    var userID = user._id
+    const token = Utils.getToken(req);
+    const decoded = Utils.jwtVerify(token);
+    const user = await User.findOne({ id: decoded.id }).select('_id');
+    const userID = user._id;
     try {
         const users = await User.aggregate([
             {
@@ -58,7 +57,7 @@ const getFriendsList = async (req: Request, res: Response) => {
                 }
             }
         ]);
-        const data = await getRoomsAndCheckReadFriendList(users[0])
+        const data = await getRoomsAndCheckReadFriendList(users[0]);
         return Http.SuccessResponse(res, data.user_friends);
     } catch (error) {
         return Http.InternalServerResponse(res);
@@ -67,18 +66,18 @@ const getFriendsList = async (req: Request, res: Response) => {
 const getRoomsAndCheckReadFriendList = async (data: any) => {
     try {
         for (const index of data.user_friends.keys()) {
-            var room = await Room.aggregate([
+            const room = await Room.aggregate([
                 {
                     $match: {
                         $and: [
                             {
-                                "user_rooms": { $elemMatch: { "_id": Types.ObjectId(data._id) } }
+                                'user_rooms': { $elemMatch: { '_id': Types.ObjectId(data._id) } }
                             },
                             {
-                                "user_rooms": { $elemMatch: { "_id": Types.ObjectId(data.user_friends[index]._id.toString()) } }
+                                'user_rooms': { $elemMatch: { '_id': Types.ObjectId(data.user_friends[index]._id.toString()) } }
                             },
                             {
-                                "type": 1
+                                'type': 1
                             },
                         ]
                     }
@@ -99,7 +98,7 @@ const getRoomsAndCheckReadFriendList = async (data: any) => {
                         }
                     }
                 },
-            ])
+            ]);
             if (room.length >= 1) {
                 data.user_friends[index].room_id = room[0]._id;
                 data.user_friends[index].is_unread = room[0].user_rooms[0].is_unread;
