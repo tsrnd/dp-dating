@@ -3,7 +3,7 @@ import Utils from '../utils';
 import { Client } from '../../models/Client';
 import * as Http from '../../util/http';
 
- export class AuthMiddleWare {
+export class AuthMiddleWare {
     public async authorizationClient(req: Request, res: Response, next: any) {
         let token;
         try {
