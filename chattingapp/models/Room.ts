@@ -8,6 +8,9 @@ const RoomSchema = new Schema({
         required: true,
         default: 0
     },
+    name: {
+        type: String,
+    },
     user_rooms: [
         {
             _id: {

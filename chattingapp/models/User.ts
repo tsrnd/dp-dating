@@ -31,15 +31,6 @@ const UserSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Room'
     }],
-    user_friends: [
-        {
-            _id: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User'
-            },
-            status: Number
-        }
-    ],
     created_at: {
         type: Date,
         default: Date.now
@@ -54,10 +45,10 @@ const UserSchema = new Schema({
     }
 });
 
-UserSchema.pre('save', async function(next) {
+UserSchema.pre('save', async function (next) {
     let client;
     try {
-        client = await Client.findOne({ _id: this.client_id});
+        client = await Client.findOne({ _id: this.client_id });
     } catch (err) {
         throw new Error('Client.findOne() error');
     }

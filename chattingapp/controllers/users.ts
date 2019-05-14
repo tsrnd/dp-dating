@@ -6,27 +6,36 @@ import * as config from 'config';
 import * as Http from '../util/http';
 import Utils from '../util/utils';
 
-
 const getFriendsList = async (req: Request, res: Response) => {
     const token = Utils.getToken(req);
     const decoded = Utils.jwtVerify(token);
     const user = await User.findOne({ id: decoded.id }).select('_id');
     const userID = user._id;
     try {
-        const users = await User.aggregate([
+        const rooms = await Room.aggregate([
             {
-                $match: { _id: Types.ObjectId(userID) }
+                $match: {
+                    $and: [
+                        {
+                            'user_rooms': { $elemMatch: { '_id': Types.ObjectId(userID) } }
+                        },
+                        {
+                            'type': 0
+                        },
+                    ]
+                }
+
             },
             {
                 $project: {
                     _id: 1,
-                    nickname: 1,
-                    user_friends: {
+                    type: 1,
+                    user_rooms: {
                         $filter: {
-                            input: '$user_friends',
-                            as: 'user_friend',
+                            input: '$user_rooms',
+                            as: 'user_room',
                             cond: {
-                                $eq: ['$$user_friend.status', 1]
+                                $ne: ['$$user_room._id', Types.ObjectId(userID)]
                             }
                         }
                     }
@@ -35,19 +44,18 @@ const getFriendsList = async (req: Request, res: Response) => {
             {
                 $lookup: {
                     from: 'users',
-                    localField: 'user_friends._id',
+                    localField: 'user_rooms._id',
                     foreignField: '_id',
-                    as: 'user_friends'
+                    as: 'user_rooms'
                 }
             },
             {
                 $project: {
                     _id: 1,
-                    nickname: 1,
-                    'user_friends._id': 1,
-                    'user_friends.nickname': 1,
-                    'user_friends.active_status': 1,
-                    'user_friends.img_url': {
+                    name: 1,
+                    'user_rooms._id': 1,
+                    'user_rooms.nickname': 1,
+                    'user_rooms.img_url': {
                         $ifNull: [
                             '$img_url',
                             config.get('dating_app.default_user_avatar')
@@ -56,31 +64,25 @@ const getFriendsList = async (req: Request, res: Response) => {
                 }
             }
         ]);
-        const data = await getRoomsAndCheckReadFriendList(users[0]);
-        return Http.SuccessResponse(res, data.user_friends);
+        const data = await getRoomsAndCheckReadFriendList(rooms, userID);
+        const users: any = [];
+        for (let index = 0; index < rooms.length; index++) {
+            users.push(data[index].user_rooms[0]);
+        }
+        return Http.SuccessResponse(res, users);
+
     } catch (error) {
         return Http.InternalServerResponse(res);
     }
 };
-const getRoomsAndCheckReadFriendList = async (data: any) => {
+
+
+const getRoomsAndCheckReadFriendList = async (data: any, userID: string) => {
     try {
-        for (const index of data.user_friends.keys()) {
+        for (const index of data.keys()) {
             const room = await Room.aggregate([
                 {
-                    $match: {
-                        $and: [
-                            {
-                                'user_rooms': { $elemMatch: { '_id': Types.ObjectId(data._id) } }
-                            },
-                            {
-                                'user_rooms': { $elemMatch: { '_id': Types.ObjectId(data.user_friends[index]._id.toString()) } }
-                            },
-                            {
-                                'type': 0
-                            },
-                        ]
-                    }
-
+                    $match: { _id: Types.ObjectId(data[index]._id) }
                 },
                 {
                     $project: {
@@ -91,16 +93,16 @@ const getRoomsAndCheckReadFriendList = async (data: any) => {
                                 input: '$user_rooms',
                                 as: 'user_room',
                                 cond: {
-                                    $eq: ['$$user_room._id', Types.ObjectId(data._id)]
+                                    $eq: ['$$user_room._id', Types.ObjectId(userID)]
                                 }
                             }
                         }
                     }
-                },
+                }
             ]);
             if (room.length >= 1) {
-                data.user_friends[index].room_id = room[0]._id;
-                data.user_friends[index].is_unread = room[0].user_rooms[0].is_unread;
+                data[index].user_rooms[0].id_room = room[0]._id;
+                data[index].user_rooms[0].is_unread = room[0].user_rooms[0].is_unread;
             }
         }
         return data;
@@ -108,4 +110,5 @@ const getRoomsAndCheckReadFriendList = async (data: any) => {
         return Http.InternalServerResponse(error);
     }
 };
+
 export { getFriendsList };
