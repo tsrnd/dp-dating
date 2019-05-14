@@ -37,6 +37,12 @@ $(document).ready(function() {
         getUserProfile();
         getListFriend();
     });
+    $('#update-user-profile').click(e => {
+        e.preventDefault();
+        $('#profile-modal').modal('hide');
+        $('#update-user').modal('toggle');
+        getDetail();
+    });
     window.fbAsyncInit = function() {
         FB.init({
             appId: '2423738151191635',
@@ -84,6 +90,35 @@ $(document).ready(function() {
                     },
                     'slow'
                 );
+            },
+            error: resp => {
+                if (resp.status === 400) {
+                    let errors = resp.responseJSON.errors;
+                    errors.forEach(element => {
+                        $('#err-' + element.param)
+                            .html(element.msg)
+                            .show();
+                    });
+                } else {
+                    alert('Internal server error! Please try again later.');
+                }
+            }
+        });
+    });
+    $('#btn-update').click(e => {
+        $.post({
+            url: '/api/profile/setting',
+            data: {
+                gender: $('#gender').val(),
+                age: $('#age').val(),
+                location: $('#location').val(),
+                occupation: $('#occupation').val(),
+                income_level: $('#income').val(),
+                ethnic: $('#ethnic').val()
+            },
+            success: resp => {
+                $('#update-user').modal("hide");
+                $("#btn-profile").click();
             },
             error: resp => {
                 if (resp.status === 400) {
@@ -212,6 +247,23 @@ function getListFriend() {
             alert('Internal server error! Please try again later.');
         }
     });
+}
+function getDetail() {
+    $.ajax({
+        url: '/api/profile',
+        method: 'GET',
+        success: function(data) {
+            // alert(data['location'])
+            // document.getElementById("gender").value = data['gender'];
+            $('#gender').val(data['gender']);
+            $('#age').val(data['age']);
+            $('#location').val(data['location']);
+            $('#occupation').val(data['occupation']);
+            $('#income').val(data['income_level']);
+            $('#ethnic').val(data['ethnic']);
+
+        }
+    })
 }
 
 function requestSetting() {
