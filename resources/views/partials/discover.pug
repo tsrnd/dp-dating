@@ -4,129 +4,86 @@
       .col-12
         .breadcumb--con
           h2.title Discover
-          nav(aria-label='breadcrumb')
-            ol.breadcrumb
-              li.breadcrumb-item
-                a(href='#')
-                  i.fa.fa-venus-mars
-                  |  Men
-              li.breadcrumb-item 18 - 22
-              li.breadcrumb-item Option 1     
-              li.breadcrumb-item.active(aria-current='page') Option 2        
-              li.setting-item
-                a#btn-setting-item(href='')
-                  i.fa.fa-cogs
-                  |  Setting
-section.mona-projects-area.section-padding-80-0.mb-50
+          .row
+            .col-sm-8
+              nav(aria-label='breadcrumb')
+                ol.breadcrumb
+                  li.breadcrumb-item
+                    a(href='#')#dis-setting-gender
+                      //- i.fa.fa-venus-mars
+                  li.breadcrumb-item#dis-setting-age
+                  li.breadcrumb-item#dis-setting-location
+                  li.breadcrumb-item#dis-setting-occupation(aria-current='page') 
+                  li.setting-item
+                    a#btn-setting-item(href='')
+                      i.fa.fa-cogs
+                      |  Setting
+            .col-sm-4.text-right#loading-views
+              //- .lds-dual-ring
+section.mona-projects-area.section-padding-80-0.mb-50#discover-list
+  //- #loading-views.container.text-center
   .container
-    .row.mona-portfolio
+    p#notifi-opps
+      b Opps!
+      |  There are no users that match your requirements. We will send a notification when we had.
+    .row.mona-portfolio#discover-users-list
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
-        .single-project-area
-          img(src='./static/img/bg-img/31.jpg', alt='')
-          // Hover Content
+        .single-project-area.discover-box.img-255-255
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
-              h4 Herbert Newman
-              h6 Model: Clifford Colon
-              h6 Make-up: Terry Gomez
-              h6 Photographer: Floyd Warner
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
-        .single-project-area
-          img(src='./static/img/bg-img/32.jpg', alt='')
-          // Hover Content
+        .single-project-area.discover-box.img-255-255
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
-              h4 Herbert Newman
-              h6 Model: Clifford Colon
-              h6 Make-up: Terry Gomez
-              h6 Photographer: Floyd Warner
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
-        .single-project-area
-          img(src='./static/img/bg-img/33.jpg', alt='')
-          // Hover Content
+        .single-project-area.discover-box.img-255-525
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
-              h4 Herbert Newman
-              h6 Model: Clifford Colon
-              h6 Make-up: Terry Gomez
-              h6 Photographer: Floyd Warner
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
-        .single-project-area
-          img(src='./static/img/bg-img/34.jpg', alt='')
-          // Hover Content
+        .single-project-area.discover-box.img-255-525
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
-              h4 Herbert Newman
-              h6 Model: Clifford Colon
-              h6 Make-up: Terry Gomez
-              h6 Photographer: Floyd Warner
       // Single Projects Item
       .col-12.col-sm-6.col-lg-6.single_gallery_item.mb-30
-        .single-project-area
-          img(src='./static/img/bg-img/35.jpg', alt='')
-          // Hover Content
+        .single-project-area.discover-box.img-540-240
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
-              h4 Herbert Newman
-              h6 Model: Clifford Colon
-              h6 Make-up: Terry Gomez
-              h6 Photographer: Floyd Warner
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
-        .single-project-area
-          img(src='./static/img/bg-img/36.jpg', alt='')
-          // Hover Content
+        .single-project-area.discover-box.img-255-525
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
-              h4 Herbert Newman
-              h6 Model: Clifford Colon
-              h6 Make-up: Terry Gomez
-              h6 Photographer: Floyd Warner
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
-        .single-project-area
-          img(src='./static/img/bg-img/37.jpg', alt='')
-          // Hover Content
+        .single-project-area.discover-box.img-255-525
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
-              h4 Herbert Newman
-              h6 Model: Clifford Colon
-              h6 Make-up: Terry Gomez
-              h6 Photographer: Floyd Warner
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
-        .single-project-area
-          img(src='./static/img/bg-img/38.jpg', alt='')
-          // Hover Content
+        .single-project-area.discover-box.img-255-255
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
-              h4 Herbert Newman
-              h6 Model: Clifford Colon
-              h6 Make-up: Terry Gomez
-              h6 Photographer: Floyd Warner
       // Single Projects Item
       .col-12.col-sm-6.col-lg-3.single_gallery_item.mb-30
-        .single-project-area
-          img(src='./static/img/bg-img/39.jpg', alt='')
-          // Hover Content
+        .single-project-area.discover-box.img-255-255
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
-              h4 Herbert Newman
-              h6 Model: Clifford Colon
-              h6 Make-up: Terry Gomez
-              h6 Photographer: Floyd Warner
       // Single Projects Item
       .col-12.col-sm-6.col-lg-6.single_gallery_item.mb-30
-        .single-project-area
-          img(src='./static/img/bg-img/40.jpg', alt='')
-          // Hover Content
+        .single-project-area.discover-box.img-540-240
+          p.user-id(style='display: none;')
           .hover-content.d-flex.align-items-center
             .hover-text
-              h4 Herbert Newman
-              h6 Model: Clifford Colon
-              h6 Make-up: Terry Gomez
-              h6 Photographer: Floyd Warner

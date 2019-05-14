@@ -59,6 +59,17 @@ CREATE TABLE IF NOT EXISTS facebook_users
     PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
+CREATE TABLE IF NOT EXISTS discover_settings
+(
+    id serial NOT NULL UNIQUE,
+    user_id INTEGER,
+    request VARCHAR(255),
+    created_at timestamp,
+    updated_at timestamp,
+    deleted_at timestamp,
+    PRIMARY KEY (id)
+) WITHOUT OIDS;
+
 CREATE TABLE IF NOT EXISTS user_friends
 (
     id serial NOT NULL UNIQUE,
@@ -71,6 +82,12 @@ CREATE TABLE IF NOT EXISTS user_friends
     PRIMARY KEY (id)
 ) WITHOUT OIDS;
 
+ALTER TABLE discover_settings
+    ADD FOREIGN KEY (user_id)
+	REFERENCES users (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
 ALTER SEQUENCE user_friends_id_SEQ INCREMENT 1 RESTART 1;
 
 ALTER TABLE user_friends
@@ -79,13 +96,35 @@ ALTER TABLE user_friends
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
 ;
+
 ALTER TABLE user_friends
 	ADD FOREIGN KEY (friend_id)
 	REFERENCES users (id)
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
-<<<<<<< HEAD
 ;
-=======
-; 
->>>>>>> 983c0bab07ae028667588cc0d15d6258966f87fe
+
+CREATE TABLE IF NOT EXISTS user_discovers
+(
+    id serial NOT NULL UNIQUE,
+    user_id INTEGER,
+    user_discover_id INTEGER,
+    created_at timestamp,
+    updated_at timestamp,
+    deleted_at timestamp,
+    PRIMARY KEY (id)
+) WITHOUT OIDS;
+
+ALTER TABLE user_discovers
+	ADD FOREIGN KEY (user_id)
+    REFERENCES users (id)
+    ON UPDATE RESTRICT
+    ON DELETE RESTRICT
+;
+
+ALTER TABLE user_discovers
+	ADD FOREIGN KEY (user_discover_id)
+    REFERENCES users (id)
+    ON UPDATE RESTRICT
+    ON DELETE RESTRICT
+;
