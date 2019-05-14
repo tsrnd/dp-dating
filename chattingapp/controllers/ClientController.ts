@@ -55,12 +55,45 @@ export class ClientController {
                 return Http.NotFoundResponse(res, {message: 'User not found'});
             }
             try {
-                const tokenChat: string = Utils.jwtGenerateToken(userLogin);
+                const tokenChat: string = Utils.jwtGenerateToken(userLogin.toJSON());
                 return Http.SuccessResponse(res, {token: tokenChat});
             } catch (err) {
-                console.log(err);
                 return Http.InternalServerResponse(res);
             }
+        } catch (err) {
+            return Http.InternalServerResponse(res);
+        }
+    }
+
+    public async createUser(req: Request, res: Response) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return Http.BadRequestResponse(res, { errors: errors.array() });
+        }
+        let tokenClient: string;
+        try {
+            tokenClient = Utils.getToken(req);
+        } catch (err) {
+            return Http.UnauthorizedResponse(res);
+        }
+        const decoded: any = jwt.decode(tokenClient, { complete: true });
+        const clientID: string = decoded.payload.id;
+        const params: any = req.body;
+        try {
+            const user = await User.findOne({client_id: clientID, id: params.id});
+            if (user) {
+                return Http.BadRequestResponse(res, {message: 'User already exist'});
+            }
+            const userCreate = {
+                client_id: clientID,
+                id: params.id,
+                nickname: params.nickname,
+                img_url: params.img_url
+            };
+            await User.create(userCreate);
+
+            const tokenChat: string = Utils.jwtGenerateToken(userCreate);
+            return Http.SuccessResponse(res, {token: tokenChat});
         } catch (err) {
             return Http.InternalServerResponse(res);
         }

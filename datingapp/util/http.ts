@@ -35,5 +35,5 @@ export let NotFoundResponse = (
     res: Response,
     data: any = { msg: 'Not Found' }
 ) => {
-    res.status(400).end(JSON.stringify(data));
+    res.status(404).end(JSON.stringify(data));
 };

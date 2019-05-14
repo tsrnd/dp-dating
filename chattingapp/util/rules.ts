@@ -15,5 +15,10 @@ export const Rules = {
 
     authUserLogin: [
         check('id').isInt({ gt: 0 })
+    ],
+
+    createUser: [
+        check('id').isInt({ gt: 0 }),
+        check('nickname').isLength({min: 4, max: 16}).matches('^[A-Za-z][A-Za-z0-9\_]*$')
     ]
 };

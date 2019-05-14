@@ -2,9 +2,8 @@ import { Request, Response } from 'express';
 import { Client } from '../models/Client';
 import { Md5 } from 'md5-typescript';
 import { validationResult } from 'express-validator/check';
-import * as jwt from 'jsonwebtoken';
-import * as config from 'config';
 import * as Http from '../util/http';
+import Utils from '../util/utils';
 
 export class AuthController {
     public async clientLogin(req: Request, res: Response) {
@@ -21,12 +20,7 @@ export class AuthController {
             if (!client) {
                 return Http.UnauthorizedResponse(res);
             }
-
-             // Generate token
-            const configJwt = config.get('chat_app.jwt');
-            const token = jwt.sign({id: client._id}, configJwt.secret_key, {
-                expiresIn: configJwt.expired
-            });
+            const token: string = Utils.jwtGenerateToken({id: client._id});
             return Http.SuccessResponse(res, {token: token});
         } catch {
             return Http.InternalServerResponse(res);

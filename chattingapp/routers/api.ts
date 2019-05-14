@@ -26,6 +26,7 @@ class APIRouter {
         this.router.post('/auth/login', Rules.authClientLogin, this.AuthController.clientLogin);
         this.router.use('/clients', this.AuthMiddleWare.authorizationClient);
         this.router.post('/clients/user/login', Rules.authUserLogin, this.ClientController.userLogin);
+        this.router.post('/clients/user', Rules.createUser, this.ClientController.createUser);
         this.router.use('/users', this.AuthMiddleWare.authorizationUser);
         this.router.get('/users/friends', UserController.getFriendsList);
     };
