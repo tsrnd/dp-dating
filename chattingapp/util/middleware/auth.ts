@@ -51,7 +51,6 @@ export class AuthMiddleWare {
             }
             next();
         } catch (err) {
-            console.log(err);
             return Http.InternalServerResponse(res);
         }
     }
