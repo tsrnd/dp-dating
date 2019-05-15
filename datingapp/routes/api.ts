@@ -57,6 +57,6 @@ router.post(
 router.post('/user/friend', middleware.auth, userController.addFriend);
 router.get('/profile', middleware.auth, userController.getUserProfile);
 router.get('/user/friend', middleware.auth, userController.getUserFriend);
-router.post('/user', middleware.auth, myMulter.single("file"), userController.updateUserProfile);
+router.post('/user', middleware.auth, myMulter.single('file'), userController.updateUserProfile);
 
 export default router;

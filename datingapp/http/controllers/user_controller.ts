@@ -12,7 +12,7 @@ import { FacebookUsers } from '../../models/facebook_user';
 import { Op } from 'sequelize';
 import { validationResult } from 'express-validator/check';
 import { DiscoverSetting } from '../../models/discover_setting';
-import {Client} from 'minio';
+import { Client } from 'minio';
 
 const getProfileFB = (req: Request, resp: Response) => {
     const options = {
@@ -365,9 +365,9 @@ const addFriend = async (req: Request, res: Response) => {
         return Http.InternalServerResponse(res);
     }
 };
-const updateUserProfile =async (req: Request, res: Response) => {
+const updateUserProfile = async (req: Request, res: Response) => {
     const userID = req.headers.auth_user['id'];
-    var value = {
+    const value = {
         nickname: req.body.nickname,
         gender: req.body.gender,
         age: req.body.age,
@@ -376,14 +376,14 @@ const updateUserProfile =async (req: Request, res: Response) => {
         occupation: req.body.occupation,
         ethnic: req.body.ethnic,
     };
-    var minioClient = new Client({
+    const minioClient = new Client({
         endPoint: 's3',
         port: 9000,
         useSSL: false,
         accessKey: process.env.S3_ACCESS_KEY,
         secretKey: process.env.S3_SECRET_KEY
     });
-    let updateUser = () => {
+    const updateUser = () => {
         User.update(value, {
             where: {
                 id: userID
@@ -417,19 +417,19 @@ const updateUserProfile =async (req: Request, res: Response) => {
         }).catch(err => {
             return Http.InternalServerResponse(res);
         });
-    }
+    };
     if (req.file) {
-        var type: string;
+        let type: string;
         if (req.file.mimetype != '') {
-            type = '.' + req.file.mimetype.split('/')[1]
+            type = '.' + req.file.mimetype.split('/')[1];
         }
         const fileName = Date.now() + type;
         minioClient.putObject(process.env.S3_BUCKETNAME, fileName, req.file.buffer, function(error, etag) {
-            if(error) {
+            if (error) {
                 return console.log(error);
             }
-            minioClient.presignedGetObject(process.env.S3_BUCKETNAME, fileName, 7*24*60*60, function(err, url) {
-                if (err) return console.log(err)
+            minioClient.presignedGetObject ( process.env.S3_BUCKETNAME, fileName, 7 * 24 * 60 * 60, function ( err, url ) {
+                if (err) return console.log(err);
                 value['profile_picture'] = url;
                 updateUser();
             });
