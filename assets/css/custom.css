@@ -172,3 +172,8 @@
     position: relative;
     background-color: #232323
 }
+
+.friend-profile-picture {
+    width: 20px;
+    height: 20px;
+}

@@ -10,6 +10,7 @@ import DB from '../../util/db';
 import * as config from 'config';
 import { FacebookUsers } from '../../models/facebook_user';
 import { validationResult } from 'express-validator/check';
+import { Op } from 'sequelize';
 
 const getProfileFB = (req: Request, resp: Response) => {
     const options = {
@@ -65,9 +66,10 @@ const getUserProfile = async (req: Request, res: Response) => {
     User.findOne({
         where: {
             id: userID
-        }
+        },
+        attributes: ['id', 'username', 'nickname', 'profile_picture', 'age', 'gender', 'location', 'income_level', 'occupation', 'ethnic']
     }).then( (result) => {
-        return res.json(result);
+        return Http.SuccessResponse(res, result);
     })
     .catch( err => {
         return Http.InternalServerResponse(res);
@@ -76,22 +78,27 @@ const getUserProfile = async (req: Request, res: Response) => {
 
 const getUserFriend = async (req: Request, res: Response) => {
     const userID = req.headers.auth_user['id'];
-    UserFriends.findAll({
-        where: {
-            user_id: userID,
-            status: 1
-        },
-        include: [{
-            model: User,
-            where: {}
-        }]
-    }).then( (result) => {
-            return res.json(result);
-        })
-        .catch( err => {
-            return Http.InternalServerResponse(res);
-        });
-    };
+    DB.query({query: `
+        SELECT "user"."id", "user"."username", "user"."nickname", "user"."profile_picture"
+            FROM "users" as "user"
+            INNER JOIN (
+                SELECT "user_friends"."friend_id"
+                FROM "user_friends"
+                WHERE "user_friends"."user_id" = ? AND "user_friends"."status" = 1
+                UNION
+                SELECT "user_friends"."user_id"
+                FROM "user_friends"
+                WHERE "user_friends"."friend_id" = ? AND "user_friends"."status" = 1
+            ) as "friends" ON "friends"."friend_id" = "user"."id" ORDER BY "friends"."friend_id" DESC LIMIT ?;`,
+        values: [userID, userID, 5]
+    })
+    .then( (result) => {
+        return Http.SuccessResponse(res, result[0]);
+    })
+    .catch( err => {
+        return Http.InternalServerResponse(res);
+    });
+};
 
 const profileSetting = (req: Request, resp: Response) => {
     const userID = req.headers.auth_user['id'];

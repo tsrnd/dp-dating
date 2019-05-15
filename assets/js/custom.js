@@ -4,7 +4,6 @@ $(document).ready(function() {
         authInfo();
         requestSetting();
     }
-    // register_popup(1, "Nam");
     $('.btn-discover').click(function(e) {
         e.preventDefault();
         $('html,body').animate(
@@ -61,8 +60,7 @@ $(document).ready(function() {
     })(document, 'script', 'facebook-jssdk');
 
     $('#btn-logout').click(() => {
-        localStorage.clear();
-        location.reload(true);
+        logout();
     });
 
     $('#btn-profile-setting').click(e => {
@@ -86,15 +84,21 @@ $(document).ready(function() {
                 );
             },
             error: resp => {
-                if (resp.status === 400) {
-                    let errors = resp.responseJSON.errors;
-                    errors.forEach(element => {
-                        $('#err-' + element.param)
-                            .html(element.msg)
-                            .show();
-                    });
-                } else {
-                    alert('Internal server error! Please try again later.');
+                switch (resp.status) {
+                    case 400:
+                        let errors = resp.responseJSON.errors;
+                        errors.forEach(element => {
+                            $('#err-' + element.param)
+                                .html(element.msg)
+                                .show();
+                        });
+                        break;
+                    case 401: 
+                        logout();
+                        break
+                    default:
+                        alert('Internal server error! Please try again later.');
+                        break;
                 }
             }
         });
@@ -150,8 +154,8 @@ function getUserProfile() {
         method: 'GET',
         success: function(data) {
             $('#profile-avatar').attr('src', data['profile_picture']);
-            $('#profile-modal-nickname').html = data['nickname'];
-            $('#profile-modal-username').html = data['username'];
+            $('#profile-modal-nickname').html(data['nickname']);
+            $('#profile-modal-username').html(data['username']);
             $('#user-profile').html('');
             $('#user-profile')
                 .append(`
@@ -189,10 +193,16 @@ function getUserProfile() {
             );
         },
         error: resp => {
-            alert('Internal server error! Please try again later.');
+            if (resp.status === 401) {
+                logout()
+            } 
+            if (resp.status === 500) {
+                alert('Internal server error! Please try again later.');
+            }
         }
     });
 }
+
 function getListFriend() {
     $.ajax({
         url: '/api/user/friend',
@@ -200,16 +210,23 @@ function getListFriend() {
         success: function(userFriends) {
             $('#lisfriends').html('');
             userFriends.forEach(function(userFriend) {
+                const friendImg = !userFriend.profile_picture ? '/static/img/bg-img/img-default.png' : userFriend.profile_picture
                 $('#lisfriends').append(`
                     <li>
-                        <a><b>${userFriend.user.nickname}</b></a>
-                        <small>${userFriend.user.username}</small>
+                        <img class='friend-profile-picture rounded-circle' src='${friendImg}'>
+                        <a><b>${userFriend.nickname}</b></a>
+                        <small>${userFriend.username}</small>
                     </li>
                 `);
             });
         },
         error: resp => {
-            alert('Internal server error! Please try again later.');
+            if (resp.status === 401) {
+                logout()
+            } 
+            if (resp.status === 500) {
+                alert('Internal server error! Please try again later.');
+            }
         }
     });
 }
@@ -221,4 +238,9 @@ function requestSetting() {
             xhr.setRequestHeader('Authorization', 'Bearer ' + token);
         }
     });
+}
+
+function logout() {
+    localStorage.clear();
+    location.reload(true);
 }
