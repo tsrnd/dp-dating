@@ -19,7 +19,7 @@ class Utils {
     }
 
     public jwtGenerateToken(data: any): string {
-        return jwt.sign(data.toJSON(), this.jwt_secret, { expiresIn: this.jwt_expired });
+        return jwt.sign(data, this.jwt_secret, { expiresIn: this.jwt_expired });
     }
 
     constructor() {

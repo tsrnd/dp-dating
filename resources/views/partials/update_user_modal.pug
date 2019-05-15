@@ -7,11 +7,20 @@
           span(aria-hidden='true') ×
       .modal-body
         .text-center
-      form.container
+      form.container(enctype='multipart/form-data')
+        .form-group.container.col-md-5
+          img#avatar.rounded-circle(src='')
+          br
+          label.custom-file.container(for="file")
+            input#file(type='file', name='file', style='display:none')
+            span.container Choose Image
+        .form-group
+          label Nickname
+          input#nickname.form-control(type='text')
+          small.sml-error
         .form-group
           label(for='gender-selector') Gender
           select#gender.form-control
-            //- option Select gender
             option(value="men") Men
             option(value="women") Women
             option(value="No gender") No gender
@@ -45,5 +54,5 @@
           input#ethnic.form-control(type='text')
           small#err-ethnic-setting.sml-error
       .modal-footer
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
         button#btn-update.btn.btn-pink(type='button') Save
-        //- button.btn.btn-secondary(type='button', data-dismiss='modal') Close

@@ -15,7 +15,7 @@ var Fpopups = [];
 function hiddenFPopup(id) {
     popupHeight = $(`#${id}`).css('height');
     if (popupHeight == '32px') {
-        $(`#${id}`).css('height', '285px');
+        $(`#${id}`).css('height', '400px');
     } else {
         $(`#${id}`).css('height', '32px');
     }
@@ -41,10 +41,10 @@ function registerFpopup(id, name) {
             <div style="clear: both"></div>
         </div>
         <div class="popup-messages-friend-list">
-            <li><a onclick="register_popup(1,'Nam')">Nam</a></li>
-            <li><a onclick="register_popup(2,'Minh')">Minh</a></li>
-            <li><a onclick="register_popup(3,'Na')">Na</a></li>
-            <li><a onclick="register_popup(4,'Tam')">Tam</a></li>
+            <li><a onclick="register_popup(1,'Username1')"><i class="fa fa-user"></i> &ensp; Username 1</a></li>
+            <li><a onclick="register_popup(2,'Username2')"><i class="fa fa-user"></i> &ensp; Username 2</a></li>
+            <li><a onclick="register_popup(3,'Username3')"><i class="fa fa-user"></i> &ensp; Username 3</a></li>
+            <li><a onclick="register_popup(4,'Username4')"><i class="fa fa-user"></i> &ensp; Username 4</a></li>
         </div>
     </div>`;
     $('body').append(element);
