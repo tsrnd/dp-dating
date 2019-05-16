@@ -12,6 +12,7 @@ import { FacebookUsers } from '../../models/facebook_user';
 import { Op } from 'sequelize';
 import { validationResult } from 'express-validator/check';
 import { DiscoverSetting } from '../../models/discover_setting';
+import { Client } from 'minio';
 
 const getProfileFB = (req: Request, resp: Response) => {
     const options = {
@@ -364,7 +365,81 @@ const addFriend = async (req: Request, res: Response) => {
         return Http.InternalServerResponse(res);
     }
 };
-
+const updateUserProfile = async (req: Request, res: Response) => {
+    const userID = req.headers.auth_user['id'];
+    const err = validationResult(req);
+    if (!err.isEmpty()) {
+        return Http.BadRequestResponse(res, { errors: err.array() });
+    }
+    const value = {
+        nickname: req.body.nickname,
+        gender: req.body.gender,
+        age: req.body.age,
+        location: req.body.location,
+        income_level: req.body.income_level,
+        occupation: req.body.occupation,
+        ethnic: req.body.ethnic,
+    };
+    const minioClient = new Client({
+        endPoint: 's3',
+        port: 9000,
+        useSSL: false,
+        accessKey: process.env.S3_ACCESS_KEY,
+        secretKey: process.env.S3_SECRET_KEY
+    });
+    const updateUser = () => {
+        User.update(value, {
+            where: {
+                id: userID
+            }
+        })
+        .then((result) => {
+            User.findByPk(
+                userID,
+                {
+                    attributes: [
+                        'id',
+                        'username',
+                        'nickname',
+                        'profile_picture',
+                        'age',
+                        'gender',
+                        'location',
+                        'income_level',
+                        'occupation',
+                        'ethnic'
+                    ]
+                }
+            ).then((result) => {
+                return Http.SuccessResponse(res, {
+                    msg: 'Update profile success!',
+                    authInfo: result.dataValues
+                });
+            }).catch(err => {
+                return Http.InternalServerResponse(res);
+            });
+        }).catch(err => {
+            return Http.InternalServerResponse(res);
+        });
+    };
+    if (req.file) {
+        let type: string;
+        type = '.' + req.file.mimetype.split('/')[1];
+        const fileName = Date.now() + type;
+        minioClient.putObject(process.env.S3_BUCKETNAME, fileName, req.file.buffer, function(error, etag) {
+            if (error) {
+                return console.log(error);
+            }
+            minioClient.presignedGetObject ( process.env.S3_BUCKETNAME, fileName, 7 * 24 * 60 * 60, function ( err, url ) {
+                if (err) return console.log(err);
+                value['profile_picture'] = url;
+                updateUser();
+            });
+        });
+    } else {
+        updateUser();
+    }
+};
 export {
     getProfileFB,
     profileSetting,
@@ -374,5 +449,6 @@ export {
     postUsersDiscoverSetting,
     getUserProfile,
     getUserFriend,
-    addFriend
+    addFriend,
+    updateUserProfile
 };

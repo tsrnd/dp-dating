@@ -4,7 +4,11 @@ import * as exampleController from '../http/controllers/example';
 import * as userController from '../http/controllers/user_controller';
 import * as middleware from '../http/middleware/auth';
 import { profileSettingValidator } from '../util/validate';
+import * as multer from 'multer';
 
+export const myMulter = multer({limits: {
+    fileSize: 10 * 1024 * 1024,  // 10 MB upload limit
+    }, storage: multer.memoryStorage()});
 const router = express.Router();
 
 router.use((req: express.Request, res: express.Response, next: () => void) => {
@@ -53,5 +57,6 @@ router.post(
 router.post('/user/friend', middleware.auth, userController.addFriend);
 router.get('/profile', middleware.auth, userController.getUserProfile);
 router.get('/user/friend', middleware.auth, userController.getUserFriend);
+router.post('/user', middleware.auth, myMulter.single('file'), userController.updateUserProfile);
 
 export default router;
