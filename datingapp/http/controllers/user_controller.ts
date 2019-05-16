@@ -367,6 +367,10 @@ const addFriend = async (req: Request, res: Response) => {
 };
 const updateUserProfile = async (req: Request, res: Response) => {
     const userID = req.headers.auth_user['id'];
+    const err = validationResult(req);
+    if (!err.isEmpty()) {
+        return Http.BadRequestResponse(res, { errors: err.array() });
+    }
     const value = {
         nickname: req.body.nickname,
         gender: req.body.gender,

@@ -455,6 +455,9 @@ function getDetail() {
             $('#income').val(data['income_level']);
             $('#ethnic').val(data['ethnic']);
 
+        },
+        error: resp => {
+            alert('Internal server error! Please try again later.');
         }
     })
 }
