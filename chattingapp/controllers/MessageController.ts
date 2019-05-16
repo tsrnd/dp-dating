@@ -73,7 +73,7 @@ export class MessageController {
                     }
                 },
                 {
-                    $unwind: "$user_info"
+                    $unwind: '$user_info'
                 },
                 {
                     $limit: parseInt(limit)

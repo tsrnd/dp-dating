@@ -49,5 +49,4 @@ MessageSchema.pre('save', function (next) {
         });
 });
 
-
 export const Message = mongoose.model('messages', MessageSchema);
