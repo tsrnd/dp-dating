@@ -3,9 +3,9 @@ $(document).ready(function() {
     localStorage.passwordClient = 'datingapp';
 
     beforeChat();
-    getTokenChat();
     registerFpopup(0, 'Friend(4)');
     if (localStorage.authToken) {
+        getTokenChat();
         authInfo();
         requestAppSetting();
     }
@@ -464,11 +464,12 @@ function createUserChat() {
         },
         data: {
             id: userInfo.id,
-            nickname: userInfo.nickname,
+            nickname: 'duocduoc',
             image_url: userInfo.profile_picture
         },
         success: resp => {
-            localStorage.chatToken = JSON.stringify(resp.token);
+            response = JSON.parse(resp);
+            localStorage.tokenChat = response.token
         },
         error: resp => {
             alert('Internal server error! Please try again later.');
@@ -488,9 +489,10 @@ function getTokenChat() {
             id: userInfo.id
         },
         success: (resp) => {
-          localStorage.tokenChat = resp.token
+            response = JSON.parse(resp);
+            localStorage.tokenChat = response.token
         },
-        error: () => {
+        error: (resp) => {
             alert('Internal server error! Please try again later.');
         }
     });

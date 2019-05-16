@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 
 const CS_DB_DRIVER = process.env.CS_DB_DRIVER || 'mongodb';
-const CS_DB_HOST = process.env.CS_DB_HOST || 'localhost';
+const CS_DB_HOST = process.env.CS_DB_HOST || 'db';
 const CS_DB_NAME = process.env.CS_DB_NAME || 'mydb';
 const CS_DB_PORT = process.env.CS_DB_PORT || '27017';
 const CS_DB_USER = process.env.CS_DB_USER || 'myuser';
