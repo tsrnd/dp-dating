@@ -424,9 +424,7 @@ const updateUserProfile = async (req: Request, res: Response) => {
     };
     if (req.file) {
         let type: string;
-        if (req.file.mimetype != '') {
-            type = '.' + req.file.mimetype.split('/')[1];
-        }
+        type = '.' + req.file.mimetype.split('/')[1];
         const fileName = Date.now() + type;
         minioClient.putObject(process.env.S3_BUCKETNAME, fileName, req.file.buffer, function(error, etag) {
             if (error) {
