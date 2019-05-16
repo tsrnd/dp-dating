@@ -1,56 +1,148 @@
 .setting-item a {
-    margin-left: 20px;
-    font-size: 18px;
-    text-transform: capitalize;
-    color: #e90ec8;
-    font-weight: 500;
-    letter-spacing: normal;
+  margin-left: 20px;
+  font-size: 18px;
+  text-transform: capitalize;
+  color: #e90ec8;
+  font-weight: 500;
+  letter-spacing: normal;
 }
 
 #modal-discover-setting {
-    margin: auto;
+  margin: auto;
 }
 
 .btn-pink {
-    background-color: #e90ec8;
-    color: white;
+  background-color: #e90ec8;
+  color: white;
 }
 
 .btn-pink:hover {
-    background-color: #4a043f;
-    color: white;
+  background-color: #4a043f;
+  color: white;
 }
 
 .modal-large {
-    width: 800px;
-    margin: auto;
-    margin-top: 20px;
+  width: 800px;
+  margin: auto;
+  margin-top: 20px;
 }
 
 #profile-modal-email {
-    margin-left: 10px;
-    margin-top: -10px;
+  margin-left: 10px;
+  margin-top: -10px;
 }
 
 #auth-info a img {
-    width: 30px;
-    height: 30px;
+  width: 30px;
+  height: 30px;
+}
+
+.img-255-255 {
+  width: 255px;
+  height: 255px;
+}
+
+.img-255-525 {
+  width: 255px;
+  height: 525.3px;
+}
+
+.img-540-240 {
+  width: 540px;
+  height: 240.3px;
+}
+
+.discover-box {
+  background-position: center center;
+  background-size: cover;
+  background-color: gray;
+}
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+}
+.lds-dual-ring:after {
+  content: ' ';
+  display: block;
+  width: 46px;
+  height: 46px;
+  margin: 1px;
+  border-radius: 50%;
+  border: 5px solid #e90ec8;
+  border-color: #e90ec8 transparent #e90ec8 transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .sml-error {
     color: red;
 }
 
+.heart{
+  position: relative;
+  width: 100px;
+  height: 90px;
+  float: left;
+}
+.heart:before,
+.heart:after{
+  position: absolute;
+  content: "";
+  left: 50px;
+  top: 0;
+  width: 50px;
+  height: 80px;
+  background: #e90ec8;
+  -moz-border-radius: 50px 50px 0 0;
+  border-radius: 50px 50px 0 0;
+  -webkit-transform: rotate(-45deg);
+     -moz-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+       -o-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+  -webkit-transform-origin: 0 100%;
+     -moz-transform-origin: 0 100%;
+      -ms-transform-origin: 0 100%;
+       -o-transform-origin: 0 100%;
+          transform-origin: 0 100%;
+}
+.heart:after{
+  left: 0;
+  -webkit-transform: rotate(45deg);
+     -moz-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+       -o-transform: rotate(45deg);
+          transform: rotate(45deg);
+  -webkit-transform-origin: 100% 100%;
+     -moz-transform-origin: 100% 100%;
+      -ms-transform-origin: 100% 100%;
+       -o-transform-origin: 100% 100%;
+          transform-origin :100% 100%;
+}
+
+.relative-center {
+  left: 30%;
+  top: 34%;
+}
 .popup-box {
-    display: none;
-    position: fixed;
-    bottom: 0px;
-    right: 220px;
-    height: 285px;
-    background-color: rgb(237, 239, 244);
-    width: 300px;
-    border: 1px solid rgba(29, 49, 91, 0.3);
-    z-index: 99;
+  display: none;
+  position: fixed;
+  bottom: 0px;
+  right: 220px;
+  height: 285px;
+  background-color: rgb(237, 239, 244);
+  width: 220px;
+  border: 1px solid rgba(29, 49, 91, 0.3);
+  z-index: 99;
 }
 
 .popup-box .popup-head {

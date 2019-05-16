@@ -1,17 +1,17 @@
 $(document).ready(function() {
+    localStorage.accountClient = 'duocnguyenc';
+    localStorage.passwordClient = 'datingapp';
+
+    beforeChat();
+    getTokenChat();
     registerFpopup(0, 'Friend(4)');
     if (localStorage.authToken) {
         authInfo();
-        requestSetting();
+        requestAppSetting();
     }
     $('.btn-discover').click(function(e) {
         e.preventDefault();
-        $('html,body').animate(
-            {
-                scrollTop: $('.discover-area').offset().top
-            },
-            'slow'
-        );
+        discover();
     });
     $('#btn-signin').click(e => {
         e.preventDefault();
@@ -103,7 +103,182 @@ $(document).ready(function() {
             }
         });
     });
+
+    $('#btn-discover-apply-setting').click(function(e) {
+        const data = {
+            min_age: $('#age-selector')
+                .val()
+                .split(',')[0],
+            max_age: $('#age-selector')
+                .val()
+                .split(',')[1],
+            location: $('#location-selector').val(),
+            occupation: $('#occupation-selector').val(),
+            gender: $('#gender-selector').val()
+        };
+        $.post({
+            url: '/api/discover/setting',
+            data: data,
+            success: resp => {
+                $('#modal-discover-setting').modal('toggle');
+                discover();
+            },
+            error: e => {
+                console.log(e);
+            }
+        });
+    });
 });
+
+function getDiscoverSetting() {
+    return $.ajax({
+        url: '/api/discover/setting',
+        type: 'get'
+    });
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function discover(scrollRequired) {
+    $('#loading-views').html('<div class="lds-dual-ring"></div>');
+    $('html,body').animate(
+        {
+            scrollTop: $('.discover-area').offset().top
+        },
+        'slow'
+    );
+    let dcvSetting = {};
+    try {
+        dcvSetting = await getDiscoverSetting();
+    } catch (error) {
+        if (error.status == 404) {
+            $('#modal-discover-setting .modal-body .text-center')
+                .html(
+                    `<p class="alert alert-info">The first, you need fill some information for this feature.</p>`
+                )
+                .hide()
+                .show()
+                .delay(3000)
+                .slideUp();
+            $('#modal-discover-setting').modal('show');
+        }
+        return;
+    }
+
+    try {
+        dcvSetting.limit = 10;
+        dcvSetting.page = 1;
+        const response = await getUserDiscover(dcvSetting);
+        if (response.results.length > 0) {
+            $('#notifi-opps').hide();
+        } else {
+            $('#notifi-opps').show();
+        }
+        setUsersDiscover(response.results);
+        $('#dis-setting-gender').html(
+            `<i class="fa fa-venus-mars"></i>
+            ${response.req.gender}`
+        );
+        $('#dis-setting-age').html(
+            `${response.req.min_age} - ${response.req.max_age}`
+        );
+        $('#dis-setting-occupation').html(`${response.req.occupation}`);
+        $('#dis-setting-location').html(`${response.req.location}`);
+
+        await sleep(1000);
+        $('#loading-views').html(
+            `<h5 style='font-size: 27px; padding: 12.5px;'>${
+                response.total_count
+            }<small>(matching)</small></h5>`
+        );
+    } catch (error) {
+        console.log(error.res);
+    }
+}
+
+// function discoverBarS
+function setUsersDiscover(users) {
+    $('.discover-box').each(function(index) {
+        if (users[index]) {
+            // console.log(users[index]);
+            let user = users[index];
+            $(this).css('position', 'relative');
+            $(this).css('background-image', `url(${user.profile_picture})`);
+            $(this).find('.hover-text').html(`
+                <h5 style='position: absolute; right: 13px; top: 5px;'><a href='' class='text-light btn-close-discover-item'>x</a></h5>
+                ${user.nickname ? `<h4>${user.nickname}</h4>` : ''}
+                ${user.gender ? `<h6>Gender: ${user.gender}</h6>` : ''}
+                ${user.age ? `<h6>Age: ${user.age}</h6>` : ''}
+                ${
+                    user.occupation
+                        ? `<h6>Occupation: ${user.occupation}</h6>`
+                        : ''
+                }
+                ${user.ethnic ? `<h6>Ethnic: ${user.ethnic}</h6>` : ''}
+                ${user.location ? `<h6>Location: ${user.location}</h6>` : ''}`);
+            $(this)
+                .children('.user-id')
+                .html(user.id);
+            $(this).show();
+
+            $(this).unbind();
+            $(this).dblclick(function() {
+                $(this).html(`<div class='heart relative-center'></div>`);
+                $(this)
+                    .find('.heart')
+                    .animate({ zoom: '1%', left: '49%', top: '49%' }, 0)
+                    .animate(
+                        { zoom: '100%', left: '30%', top: '35%' },
+                        'normal'
+                    )
+                    .delay(0)
+                    .fadeOut();
+                postDiscoverItem(user.id);
+
+                discover();
+            });
+        } else {
+            $(this).hide();
+        }
+    });
+
+    $('.btn-close-discover-item').click(function(e) {
+        e.preventDefault();
+        $(this)
+            .parents('.discover-box')
+            .hide();
+        const userID = $(this)
+            .parents('.discover-box')
+            .find('.user-id')
+            .html();
+        postDiscoverItem(userID);
+    });
+}
+
+function postDiscoverItem(userID) {
+    $.post({
+        url: '/api/discover/user',
+        data: {
+            user_id: userID
+        },
+        success: resp => {
+            discover();
+        },
+        error: e => {
+            console.log(e);
+        }
+    });
+}
+
+function getUserDiscover(request) {
+    return $.ajax({
+        url: '/api/users/discover',
+        type: 'get',
+        data: request
+    });
+}
 
 function checkLoginState() {
     FB.getLoginStatus(function(response) {
@@ -117,10 +292,13 @@ function checkLoginState() {
                     localStorage.authToken = JSON.stringify(resp.token);
                     localStorage.authInfo = JSON.stringify(resp.user);
                     authInfo();
-                    requestSetting();
+                    requestAppSetting();
                     $('#modal-login').modal('hide');
                     if (resp.is_new) {
+                        createUserChat();
                         $('#modal-new-user-setting').modal();
+                    } else {
+                        getTokenChat();
                     }
                 },
                 error: resp => {
@@ -135,7 +313,7 @@ function authInfo() {
     userInfo = JSON.parse(localStorage.authInfo);
     $('#auth-info')
         .html(
-            `<a href=''>
+            `<a>
             Hi, ${userInfo.nickname}
             <img class='rounded-circle' src='${
                 userInfo.profile_picture
@@ -148,17 +326,21 @@ function authInfo() {
         )
         .show();
 }
+
 function getUserProfile() {
     $.ajax({
         url: '/api/profile',
         method: 'GET',
         success: function(data) {
+            console.log(data, '_+_+_+');
+            $('#profile-modal .modal-header').html(
+                `<h5>Profile </h5><span>${data['nickname']}</span>`
+            );
             $('#profile-avatar').attr('src', data['profile_picture']);
-            $('#profile-modal-nickname').html(data['nickname']);
+            // $('#profile-modal-nickname').html(data['nickname']);
             $('#profile-modal-username').html(data['username']);
             $('#user-profile').html('');
-            $('#user-profile')
-                .append(`
+            $('#user-profile').append(`
                     <table class='table table-user-information'>
                         <tbody>
                         <tr>
@@ -189,7 +371,9 @@ function getUserProfile() {
                     </table>
                 `);
             $('#bottom').html(
-                ` <span> posted ${data['created_at']} by <b>${data['nickname']}</b> </span> `
+                // ` <span> posted ${data['created_at']} by <b>${
+                    // data['nickname']
+                // }</b> </span> `
             );
         },
         error: resp => {
@@ -231,7 +415,7 @@ function getListFriend() {
     });
 }
 
-function requestSetting() {
+function requestAppSetting() {
     token = JSON.parse(localStorage.authToken);
     $.ajaxSetup({
         beforeSend: function(xhr) {
@@ -243,4 +427,71 @@ function requestSetting() {
 function logout() {
     localStorage.clear();
     location.reload(true);
+}
+
+function beforeChat() {
+    $.post({
+        url: 'http://localhost:3002/api/auth/login',
+        data: {
+            account: localStorage.accountClient,
+            secret_key: localStorage.passwordClient
+        },
+        success: resp => {
+            response = JSON.parse(resp);
+            localStorage.clientToken = response.token;
+        },
+        error: resp => {
+            alert('Internal server error! Please try again later.');
+        }
+    }); 
+}
+
+function requestChatSetting() {
+    token = localStorage.clientToken;
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        }
+    });
+}
+
+function createUserChat() {
+    userInfo = JSON.parse(localStorage.authInfo);
+    $.post({
+        url: 'http://localhost:3002/api/clients/user',
+        headers: {
+            'Authorization': 'Bearer '+ localStorage.clientToken
+        },
+        data: {
+            id: userInfo.id,
+            nickname: userInfo.nickname,
+            image_url: userInfo.profile_picture
+        },
+        success: resp => {
+            localStorage.chatToken = JSON.stringify(resp.token);
+        },
+        error: resp => {
+            alert('Internal server error! Please try again later.');
+        }
+    }); 
+}
+
+function getTokenChat() {
+    token = localStorage.clientToken
+    userInfo = JSON.parse(localStorage.authInfo);
+    $.post({
+        url: 'http://localhost:3002/api/clients/user/login',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        },
+        data: {
+            id: userInfo.id
+        },
+        success: (resp) => {
+          localStorage.tokenChat = resp.token
+        },
+        error: () => {
+            alert('Internal server error! Please try again later.');
+        }
+    });
 }
