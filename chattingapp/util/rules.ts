@@ -3,14 +3,14 @@ import { check } from 'express-validator/check';
 export const Rules = {
     createClient: [
         check('name').not().isEmpty().withMessage('Name should NOT be empty'),
-        check('account').isLength({min: 4, max: 16}).matches('^[a-z][a-z0-9\_]*$'),
-        check('secret_key').isLength({min: 8, max: 16}),
+        check('account').isLength({ min: 4, max: 16 }).matches('^[a-z][a-z0-9\_]*$'),
+        check('secret_key').isLength({ min: 8, max: 16 }),
         check('email').isEmail()
     ],
 
     authClientLogin: [
-        check('account').isLength({min: 4, max: 16}).matches('^[a-z][a-z0-9\_]*$'),
-        check('secret_key').isLength({min: 8, max: 16})
+        check('account').isLength({ min: 4, max: 16 }).matches('^[a-z][a-z0-9\_]*$'),
+        check('secret_key').isLength({ min: 8, max: 16 })
     ],
 
     authUserLogin: [
@@ -19,6 +19,10 @@ export const Rules = {
 
     createUser: [
         check('id').isInt({ gt: 0 }),
-        check('nickname').isLength({min: 4, max: 16}).matches('^[A-Za-z][A-Za-z0-9\_]*$')
+        check('nickname').isLength({ min: 4, max: 16 }).matches('^[A-Za-z][A-Za-z0-9\_]*$')
+    ],
+    getMessage: [
+        check('limit').isInt({ gt: 0 }),
+        check('since_id').isInt()
     ]
 };
