@@ -23,6 +23,6 @@ export const Rules = {
     ],
     getMessage: [
         check('limit').isInt({ gt: 0 }),
-        check('since_id').isInt()
+        check('since_id').isInt({ gt: -1 })
     ]
 };

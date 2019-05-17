@@ -26,7 +26,7 @@ export class MessageController {
                 return Http.NotFoundResponse(res, { message: 'Room is not found' });
             }
             let cond = {};
-            if (sinceID <= 0) {
+            if (sinceID == 0) {
                 cond = { id: { $gt: parseInt(sinceID) } };
             } else {
                 cond = { id: { $lt: parseInt(sinceID) } };
