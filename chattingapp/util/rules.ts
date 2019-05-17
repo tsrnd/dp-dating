@@ -24,5 +24,8 @@ export const Rules = {
     getMessage: [
         check('limit').isInt({ gt: 0 }),
         check('since_id').isInt({ gt: -1 })
+    ],
+    sendMessage: [
+        check('message').isLength({ min: 1 })
     ]
 };

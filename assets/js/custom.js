@@ -32,6 +32,12 @@ $(document).ready(function() {
         getUserProfile();
         getListFriend();
     });
+    $('#update-user-profile').click(e => {
+        e.preventDefault();
+        $('#profile-modal').modal('hide');
+        $('#update-user').modal('toggle');
+        getDetail();
+    });
     window.fbAsyncInit = function() {
         FB.init({
             appId: '2423738151191635',
@@ -94,6 +100,55 @@ $(document).ready(function() {
             }
         });
     });
+    $('#file').change(e => {
+        if ($('#file')[0].files && $('#file')[0].files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#avatar').attr('src', e.target.result);
+            }
+            reader.readAsDataURL($('#file')[0].files[0]);
+        }
+    })
+    $('#btn-update').click(e => {
+        file = $('#file')[0].files? $('#file')[0].files[0]: null
+        var fd = new FormData();
+        var files = $('#file')[0].files[0];
+        fd.append('file',files);
+        fd.append('nickname', $('#nickname').val())
+        fd.append('gender', $('#gender').val());
+        fd.append('age', $('#age').val());
+        fd.append('location', $('#location').val());
+        fd.append('occupation', $('#occupation').val());
+        fd.append('income', $('#income').val());
+        fd.append('ethnic', $('#ethnic').val());
+
+        $.ajax({
+            url: '/api/user',
+            type: 'post',
+            data: fd,
+            contentType: false,
+            processData: false,
+            success: resp => {
+                localStorage.authInfo =  JSON.stringify(resp.authInfo);
+                $('#update-user').modal("hide");
+                $("#btn-profile").click();
+                $('#nickname-navi').html(resp.authInfo.nickname);
+                $('#avatar-navi').attr('src', resp.authInfo.profile_picture);
+            },
+            error: resp => {
+                if (resp.status === 400) {
+                    let errors = resp.responseJSON.errors;
+                    errors.forEach(element => {
+                        $('#err-' + element.param)
+                            .html(element.msg)
+                            .show();
+                    });
+                } else {
+                    alert('Internal server error! Please try again later.');
+                }
+            }
+        })
+    })
 
     $('#btn-discover-apply-setting').click(function(e) {
         const data = {
@@ -301,8 +356,8 @@ function authInfo() {
     $('#auth-info')
         .html(
             `<a href=''>
-            Hi, ${userInfo.nickname}
-            <img class='rounded-circle' src='${
+            Hi, <span id="nickname-navi"> ${userInfo.nickname}</span>
+            <img id="avatar-navi" class='rounded-circle' src='${
                 userInfo.profile_picture
             }' alt='user-img'>
         </a>
@@ -385,6 +440,26 @@ function getListFriend() {
             alert('Internal server error! Please try again later.');
         }
     });
+}
+function getDetail() {
+    $.ajax({
+        url: '/api/profile',
+        method: 'GET',
+        success: function(data) {
+            $('#avatar').attr('src',data['profile_picture']);
+            $('#nickname').val(data['nickname']);
+            $('#gender').val(data['gender']);
+            $('#age').val(data['age']);
+            $('#location').val(data['location']);
+            $('#occupation').val(data['occupation']);
+            $('#income').val(data['income_level']);
+            $('#ethnic').val(data['ethnic']);
+
+        },
+        error: resp => {
+            alert('Internal server error! Please try again later.');
+        }
+    })
 }
 
 function requestSetting() {
