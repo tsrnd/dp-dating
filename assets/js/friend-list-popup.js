@@ -43,7 +43,7 @@ function registerFpopup(id) {
         </div>
     </div>`;
     if (localStorage.authToken) {
-        getFriendChat();
+        // getFriendChat();
     }
     $('body').append(element);
     Fpopups.unshift(id);

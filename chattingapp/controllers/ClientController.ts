@@ -6,7 +6,6 @@ import * as Http from '../util/http';
 import Utils from '../util/utils';
 import * as jwt from 'jsonwebtoken';
 import { User } from '../models/User';
-import { UserRoom } from '../models/UserRoom';
 import { Room } from '../models/Room';
 
 export class ClientController {
@@ -120,27 +119,15 @@ export class ClientController {
         if (!errors.isEmpty()) {
             return Http.BadRequestResponse(res, { errors: errors.array() });
         }
-        let tokenClient: string;
-        try {
-            tokenClient = Utils.getTokenClient(req);
-        } catch (err) {
-            return Http.UnauthorizedResponse(res);
-        }
         const room = await Room.findOne({ $or: [ { name: 'room' + req.body.user_id + req.body.friend_id  }, { name: 'room' + req.body.friend_id + req.body.user_id } ] });
         if (room) {
             return Http.SuccessResponse(res, {msg: 'Room has been created'});
         }
         try {
-            const newRoom = await Room.create({'name': 'room' + req.body.user_id + req.body.friend_id});
-            const userRoomCreate = {
-                room_id: newRoom._id,
-                user_id: [ req.body.user_id,  req.body.friend_id ]
-            };
-            const newUserRoom = await UserRoom.create(userRoomCreate);
+            const newRoom = await Room.create({name: 'room' + req.body.user_id + req.body.friend_id, user_rooms: [Number(req.body.user_id), Number(req.body.friend_id)]});
+            return Http.SuccessResponse(res);
         } catch (error) {
             return Http.InternalServerResponse(res);
         }
-        // UserRoom.create(req.body);
-        return Http.SuccessResponse(res);
     }
 }

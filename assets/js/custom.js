@@ -602,32 +602,52 @@ function getTokenChat() {
     });
 }
 
-// function getFriendChat() {
-//     $.get({
-//         url: '/api/friend/chat',
-//         headers: {
-//             'Authorization': 'Bearer ' + JSON.parse(localStorage.authToken) 
-//         },
-//         success: resp => {
-//             if (resp.length > 0) {
-//                 $('.popup-head-left-friend-list').html(`Friend(${resp.length})`);
-//                 resp.forEach( element => {
-//                     const friendImg = !element.profile_picture ? '/static/img/bg-img/img-default.png' : element.profile_picture
-//                     $('.popup-messages-friend-list').append(`
-//                         <li><a onclick="register_popup(${element.id}, '${element.nickname}')"><img class='friend-profile-picture rounded-circle' src='${friendImg}'> &ensp; ${element.nickname}</a></li>
-//                     `);
-//                 });
-//             }
-//         },
-//         error: resp => {
-//             if (resp.status === 401) {
-//                 logout();
-//             } else {
-//                 alert('Internal server error! Please try again later.');
-//             }
-//         }
-//     });
-// }
+function getFriendChat() {
+    userInfo = JSON.parse(localStorage.authInfo);
+    $.get({
+        url: 'http://localhost:3002/api/users/rooms',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.tokenChat 
+        },
+        success: resp => {
+            if (resp.length > 0) {
+                $('.popup-head-left-friend-list').html(`Friend(${resp.length})`);
+                resp.forEach( element => {
+                    userArr = element.user_rooms
+                    userArr.splice( userArr.indexOf(userInfo.id), 1)
+                    $.get({
+                        url: '/api/user/'+userArr[0]+'/profile',
+                        headers: {
+                            'Authorization': 'Bearer ' + JSON.parse(localStorage.authToken)
+                        },
+                        success: data => {
+                            if (data) {
+                                const friendImg = !data.profile_picture ? '/static/img/bg-img/img-default.png' : data.profile_picture
+                                $('.popup-messages-friend-list').append(`
+                                    <li><a onclick="register_popup(${element._id}, '${data.nickname}')"><img class='friend-profile-picture rounded-circle' src='${friendImg}'> &ensp; ${resp.nickname}</a></li>
+                                `);
+                            }
+                        },
+                        error: data => {
+                            if (data.status === 401) {
+                                alert('Unauthorized');
+                            } else {
+                                alert('Internal server error! Please try again later.');
+                            }
+                        }
+                    });
+                });
+            }
+        },
+        error: resp => {
+            if (resp.status === 401) {
+                alert('Unauthorized');
+            } else {
+                alert('Internal server error! Please try again later.');
+            }
+        }
+    });
+}
 
 function createUserRoom(friendID) {
     userInfo = JSON.parse(localStorage.authInfo);

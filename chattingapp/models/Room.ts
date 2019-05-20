@@ -11,15 +11,9 @@ const RoomSchema = new Schema({
     name: {
         type: String,
     },
-    user_rooms: [
-        {
-            _id: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User'
-            },
-            is_unread: Number
-        }
-    ],
+    user_rooms: [{
+        type: Number
+    }],
     created_at: {
         type: Date,
         default: Date.now

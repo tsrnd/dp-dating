@@ -259,6 +259,7 @@ const postUserDiscover = async (req: Request, res: Response) => {
         return Http.InternalServerResponse(res);
     }
 };
+
 const getUserProfile = async (req: Request, res: Response) => {
     const userID = req.headers.auth_user['id'];
     User.findOne({
@@ -278,12 +279,12 @@ const getUserProfile = async (req: Request, res: Response) => {
             'ethnic'
         ]
     })
-        .then(result => {
-            return Http.SuccessResponse(res, result);
-        })
-        .catch(err => {
-            return Http.InternalServerResponse(res);
-        });
+    .then(result => {
+        return Http.SuccessResponse(res, result);
+    })
+    .catch(err => {
+        return Http.InternalServerResponse(res);
+    });
 };
 
 const getUserFriend = async (req: Request, res: Response) => {
@@ -458,6 +459,27 @@ const updateUserProfile = async (req: Request, res: Response) => {
     }
 };
 
+const getProfileChat = async (req: Request, res: Response) => {
+    const userID = req.params.user_id;
+    User.findOne({
+        where: {
+            id: userID
+        },
+        attributes: [
+            'id',
+            'nickname',
+            'profile_picture',
+        ]
+    })
+    .then(result => {
+        return Http.SuccessResponse(res, result);
+    })
+    .catch(err => {
+        console.log(err);
+        return Http.InternalServerResponse(res);
+    });
+};
+
 export {
     getProfileFB,
     profileSetting,
@@ -469,4 +491,5 @@ export {
     getUserFriend,
     addFriend,
     updateUserProfile,
+    getProfileChat
 };
