@@ -104,7 +104,7 @@ const getRoomsAndCheckReadFriendList = async (data: any, userID: string) => {
                 },
             ]);
             if (room.length >= 1) {
-                data[index].user_rooms[0].id_room = room[0]._id;
+                data[index].user_rooms[0].room_id = room[0]._id;
                 data[index].user_rooms[0].is_unread = room[0].user_rooms.is_unread;
             }
         }
