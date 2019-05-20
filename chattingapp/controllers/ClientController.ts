@@ -6,6 +6,7 @@ import * as Http from '../util/http';
 import Utils from '../util/utils';
 import * as jwt from 'jsonwebtoken';
 import { User } from '../models/User';
+import { UserRoom } from '../models/UserRoom';
 
 export class ClientController {
     public async create(req: Request, res: Response, next: any) {
@@ -16,7 +17,9 @@ export class ClientController {
         const params = req.body;
         const client = await Client.findOne({ account: params.account });
         if (client) {
-            return Http.BadRequestResponse(res, {message: 'Account already exist'});
+            return Http.BadRequestResponse(res, {
+                message: 'Account already exist'
+            });
         }
         try {
             await Client.create({
@@ -50,13 +53,20 @@ export class ClientController {
         const clientID: string = decoded.payload.id;
         const userID: Number = req.body.id;
         try {
-            const userLogin = await User.findOne({client_id: clientID, id: userID}).select('-_id client_id id nickname img_url');
+            const userLogin = await User.findOne({
+                client_id: clientID,
+                id: userID
+            }).select('-_id client_id id nickname img_url');
             if (!userLogin) {
-                return Http.NotFoundResponse(res, {message: 'User not found'});
+                return Http.NotFoundResponse(res, {
+                    message: 'User not found'
+                });
             }
             try {
-                const tokenChat: string = Utils.jwtGenerateToken(userLogin.toJSON());
-                return Http.SuccessResponse(res, {token: tokenChat});
+                const tokenChat: string = Utils.jwtGenerateToken(
+                    userLogin.toJSON()
+                );
+                return Http.SuccessResponse(res, { token: tokenChat });
             } catch (err) {
                 return Http.InternalServerResponse(res);
             }
@@ -80,9 +90,14 @@ export class ClientController {
         const clientID: string = decoded.payload.id;
         const params: any = req.body;
         try {
-            const user = await User.findOne({client_id: clientID, id: params.id});
+            const user = await User.findOne({
+                client_id: clientID,
+                id: params.id
+            });
             if (user) {
-                return Http.BadRequestResponse(res, {message: 'User already exist'});
+                return Http.BadRequestResponse(res, {
+                    message: 'User already exist'
+                });
             }
             const userCreate = {
                 client_id: clientID,
@@ -93,9 +108,11 @@ export class ClientController {
             await User.create(userCreate);
 
             const tokenChat: string = Utils.jwtGenerateToken(userCreate);
-            return Http.SuccessResponse(res, {token: tokenChat});
+            return Http.SuccessResponse(res, { token: tokenChat });
         } catch (err) {
             return Http.InternalServerResponse(res);
         }
     }
+
+    public async createUserRoom(req: Request, res: Response) {}
 }
