@@ -4,6 +4,7 @@ import { AuthMiddleWare } from '../util/middleware/auth';
 import { ClientController } from '../controllers/ClientController';
 import { AuthController } from '../controllers/AuthController';
 import { MessageController } from '../controllers/MessageController';
+import * as UserController from '../controllers/users';
 
 class APIRouter {
     private router: express.Router;
@@ -32,6 +33,8 @@ class APIRouter {
         this.router.post('/clients/user', Rules.createUser, this.ClientController.createUser);
         this.router.use('/messages', this.AuthMiddleWare.authorizationUser);
         this.router.post('/messages/:roomID', Rules.sendMessage, this.MessageController.sendMessage);
+        this.router.use('/users', this.AuthMiddleWare.authorizationUser);
+        this.router.get('/users/friends', UserController.getFriendsList);
     };
 
     getRouter = () => {
