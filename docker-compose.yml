@@ -6,7 +6,7 @@ services:
       dockerfile: ./dockerfiles/Mongodb.Dockerfile
     container_name: chatting_db
     ports:
-      - 27018:27017
+      - 27017:27017
   dating_db:
     build:
       context: .

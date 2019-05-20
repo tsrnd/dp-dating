@@ -468,5 +468,5 @@ export {
     getUserProfile,
     getUserFriend,
     addFriend,
-    updateUserProfile,
+    updateUserProfile
 };
