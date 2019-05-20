@@ -1,0 +1,57 @@
+.modal#update-user(tabindex='-1' role='dialog', data-backdrop="static" data-keyboard="false")
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5.modal-title Update user information!
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') ×
+      .modal-body
+        .text-center
+      form.container(enctype='multipart/form-data')
+        .form-group.container.col-md-5
+          img#avatar.rounded-circle(src='')
+          br
+          label.custom-file.container(for="file")
+            input#file(type='file', name='file', style='display:none')
+            span.container Choose Image
+        .form-group
+          label Nickname
+          input#nickname.form-control(type='text')
+          small.sml-error
+        .form-group
+          label(for='gender-selector') Gender
+          select#gender.form-control
+            option(value="men") Men
+            option(value="women") Women
+          small#err-gender-setting.sml-error
+        .form-group
+          label(for='age-selector') Age
+          select#age.form-control
+            - var n = 16;
+              while n < 41
+                option=n++
+          small#err-age-setting.sml-error
+        .form-group
+          label(for='location-selector') Location
+          input#location.form-control(type='text')
+          small.sml-error
+        .form-group
+          label(for='occupation-selector') Occupation
+          input#occupation.form-control(type='text')
+          small.sml-error
+        .form-group
+          label(for='income-level') Income Level
+          select#income.form-control
+            //- option Select Income Level
+            option Less than 5 million VND
+            option From 5 to 10 million VND
+            option From 10 to 20 million VND
+            option Over 20 million VND
+          small#err-income_level-setting.sml-error
+        .form-group
+          label(for='ethnic') Ethnic
+          input#ethnic.form-control(type='text')
+          small#err-ethnic-setting.sml-error
+      .modal-footer
+        button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
+        button#btn-update.btn.btn-pink(type='button') Save

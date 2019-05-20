@@ -269,3 +269,16 @@
     width: 20px;
     height: 20px;
 }
+
+.custom-file {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 20px;
+    cursor: pointer;
+}
+#avatar {
+    border: 0.5px solid #ccc;
+    margin-bottom: 15px;
+    width: 200px;
+    height: 200px;
+}
