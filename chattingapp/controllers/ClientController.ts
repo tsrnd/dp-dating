@@ -7,6 +7,7 @@ import Utils from '../util/utils';
 import * as jwt from 'jsonwebtoken';
 import { User } from '../models/User';
 import { UserRoom } from '../models/UserRoom';
+import { Room } from '../models/Room';
 
 export class ClientController {
     public async create(req: Request, res: Response, next: any) {
@@ -45,7 +46,7 @@ export class ClientController {
         }
         let tokenClient: string;
         try {
-            tokenClient = Utils.getToken(req);
+            tokenClient = Utils.getTokenClient(req);
         } catch (err) {
             return Http.UnauthorizedResponse(res);
         }
@@ -82,7 +83,7 @@ export class ClientController {
         }
         let tokenClient: string;
         try {
-            tokenClient = Utils.getToken(req);
+            tokenClient = Utils.getTokenClient(req);
         } catch (err) {
             return Http.UnauthorizedResponse(res);
         }
@@ -114,5 +115,32 @@ export class ClientController {
         }
     }
 
-    public async createUserRoom(req: Request, res: Response) {}
+    public async createUserRoom(req: Request, res: Response) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return Http.BadRequestResponse(res, { errors: errors.array() });
+        }
+        let tokenClient: string;
+        try {
+            tokenClient = Utils.getTokenClient(req);
+        } catch (err) {
+            return Http.UnauthorizedResponse(res);
+        }
+        const room = await Room.findOne({ $or: [ { name: 'room' + req.body.user_id + req.body.friend_id  }, { name: 'room' + req.body.friend_id + req.body.user_id } ] });
+        if (room) {
+            return Http.SuccessResponse(res, {msg: 'Room has been created'});
+        }
+        try {
+            const newRoom = await Room.create({'name': 'room' + req.body.user_id + req.body.friend_id});
+            const userRoomCreate = {
+                room_id: newRoom._id,
+                user_id: [ req.body.user_id,  req.body.friend_id ]
+            };
+            const newUserRoom = await UserRoom.create(userRoomCreate);
+        } catch (error) {
+            return Http.InternalServerResponse(res);
+        }
+        // UserRoom.create(req.body);
+        return Http.SuccessResponse(res);
+    }
 }

@@ -322,6 +322,7 @@ function postDiscoverItem(userID) {
         },
         error: e => {
             console.log(e);
+            alert('Internal server error! Please try again later.');
         }
     });
 }
@@ -333,7 +334,8 @@ function addFriend(userID) {
             friend_id: userID
         },
         success: resp => {
-            getFriendChat();
+            // getFriendChat();
+            createUserRoom(userID);
         },
         error: e => {
             console.log(e);
@@ -529,6 +531,7 @@ function beforeChat() {
         },
         success: resp => {
             response = JSON.parse(resp);
+            localStorage.removeItem('clientToken');
             localStorage.clientToken = response.token;
         },
         error: resp => {
@@ -551,7 +554,7 @@ function createUserChat() {
     $.post({
         url: 'http://localhost:3002/api/clients/user',
         headers: {
-            'Authorization': 'Bearer '+ localStorage.clientToken
+            'client_id': 'Bearer '+ localStorage.clientToken
         },
         data: {
             id: userInfo.id,
@@ -563,7 +566,17 @@ function createUserChat() {
             localStorage.tokenChat = response.token
         },
         error: resp => {
-            alert('Internal server error! Please try again later.');
+            switch (resp.status) {
+                case 400:
+                    alert(resp.message)
+                    break;
+                case 401:
+                    alert(resp.message);
+                    break
+                default:
+                    alert('Internal server error! Please try again later.');
+                    break;
+            }
         }
     }); 
 }
@@ -574,7 +587,7 @@ function getTokenChat() {
     $.post({
         url: 'http://localhost:3002/api/clients/user/login',
         headers: {
-          'Authorization': 'Bearer ' + token
+          'client_id': 'Bearer ' + token
         },
         data: {
             id: userInfo.id
@@ -589,29 +602,48 @@ function getTokenChat() {
     });
 }
 
-function getFriendChat() {
-    $.get({
-        url: '/api/friend/chat',
+// function getFriendChat() {
+//     $.get({
+//         url: '/api/friend/chat',
+//         headers: {
+//             'Authorization': 'Bearer ' + JSON.parse(localStorage.authToken) 
+//         },
+//         success: resp => {
+//             if (resp.length > 0) {
+//                 $('.popup-head-left-friend-list').html(`Friend(${resp.length})`);
+//                 resp.forEach( element => {
+//                     const friendImg = !element.profile_picture ? '/static/img/bg-img/img-default.png' : element.profile_picture
+//                     $('.popup-messages-friend-list').append(`
+//                         <li><a onclick="register_popup(${element.id}, '${element.nickname}')"><img class='friend-profile-picture rounded-circle' src='${friendImg}'> &ensp; ${element.nickname}</a></li>
+//                     `);
+//                 });
+//             }
+//         },
+//         error: resp => {
+//             if (resp.status === 401) {
+//                 logout();
+//             } else {
+//                 alert('Internal server error! Please try again later.');
+//             }
+//         }
+//     });
+// }
+
+function createUserRoom(friendID) {
+    userInfo = JSON.parse(localStorage.authInfo);
+    $.post({
+        url: 'http://localhost:3002/api/clients/room',
         headers: {
-            'Authorization': 'Bearer ' + JSON.parse(localStorage.authToken) 
+            'client_id': 'Bearer ' + localStorage.clientToken
+        },
+        data: {
+            user_id: userInfo.id,
+            friend_id: friendID
         },
         success: resp => {
-            if (resp.length > 0) {
-                $('.popup-head-left-friend-list').html(`Friend(${resp.length})`);
-                resp.forEach( element => {
-                    const friendImg = !element.profile_picture ? '/static/img/bg-img/img-default.png' : element.profile_picture
-                    $('.popup-messages-friend-list').append(`
-                        <li><a onclick="register_popup(${element.id}, '${element.nickname}')"><img class='friend-profile-picture rounded-circle' src='${friendImg}'> &ensp; ${element.nickname}</a></li>
-                    `);
-                });
-            }
         },
         error: resp => {
-            if (resp.status === 401) {
-                logout();
-            } else {
-                alert('Internal server error! Please try again later.');
-            }
+            alert(resp.msg)
         }
     });
 }

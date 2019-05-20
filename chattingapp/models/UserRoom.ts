@@ -7,10 +7,7 @@ const UserRoomSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Room'
     },
-    user_id: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
+    user_id: [],
     created_at: {
         type: Date,
         default: Date.now
@@ -22,4 +19,4 @@ const UserRoomSchema = new Schema({
     deleted_at: Date
 });
 
-export const Room = mongoose.model('user_room', UserRoomSchema);
+export const UserRoom = mongoose.model('user_room', UserRoomSchema);

@@ -458,31 +458,6 @@ const updateUserProfile = async (req: Request, res: Response) => {
     }
 };
 
-const getFriendChat = async (req: Request, res: Response) => {
-    const userID = req.headers.auth_user['id'];
-    DB.query({
-        query: `
-        SELECT "user"."id", "user"."nickname", "user"."profile_picture"
-            FROM "users" as "user"
-            INNER JOIN (
-                SELECT "user_friends"."friend_id"
-                FROM "user_friends"
-                WHERE "user_friends"."user_id" = ?
-                UNION
-                SELECT "user_friends"."user_id"
-                FROM "user_friends"
-                WHERE "user_friends"."friend_id" = ?
-            ) as "friends" ON "friends"."friend_id" = "user"."id";`,
-        values: [userID, userID]
-    })
-    .then(result => {
-        return Http.SuccessResponse(res, result[0]);
-    })
-    .catch(err => {
-        return Http.InternalServerResponse(res);
-    });
-};
-
 export {
     getProfileFB,
     profileSetting,
@@ -494,5 +469,4 @@ export {
     getUserFriend,
     addFriend,
     updateUserProfile,
-    getFriendChat
 };
