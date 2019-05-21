@@ -4,6 +4,7 @@ $(document).ready(function() {
     beforeChat();
     if (localStorage.authToken) {
         getTokenChat();
+        getFriendChat();
         authInfo();
         requestAppSetting();
     }
@@ -334,8 +335,8 @@ function addFriend(userID) {
             friend_id: userID
         },
         success: resp => {
-            // getFriendChat();
             createUserRoom(userID);
+            getFriendChat();
         },
         error: e => {
             console.log(e);
@@ -607,12 +608,13 @@ function getFriendChat() {
     $.get({
         url: 'http://localhost:3002/api/users/rooms',
         headers: {
-            'Authorization': 'Bearer ' + localStorage.tokenChat 
+            'chat_token': 'Bearer ' + localStorage.tokenChat 
         },
         success: resp => {
-            if (resp.length > 0) {
-                $('.popup-head-left-friend-list').html(`Friend(${resp.length})`);
-                resp.forEach( element => {
+            value = JSON.parse(resp);
+            if (value.length > 0) {
+                $('.popup-head-left-friend-list').html(`Friend(${value.length})`);
+                value.forEach((element, index) => {
                     userArr = element.user_rooms
                     userArr.splice( userArr.indexOf(userInfo.id), 1)
                     $.get({
@@ -624,13 +626,13 @@ function getFriendChat() {
                             if (data) {
                                 const friendImg = !data.profile_picture ? '/static/img/bg-img/img-default.png' : data.profile_picture
                                 $('.popup-messages-friend-list').append(`
-                                    <li><a onclick="register_popup(${element._id}, '${data.nickname}')"><img class='friend-profile-picture rounded-circle' src='${friendImg}'> &ensp; ${resp.nickname}</a></li>
+                                    <li><a onclick="register_popup(${++index}, '${data.nickname}', '${element._id}')"><img class='friend-profile-picture rounded-circle' src='${friendImg}'> &ensp; ${data.nickname}</a></li>
                                 `);
                             }
                         },
                         error: data => {
                             if (data.status === 401) {
-                                alert('Unauthorized');
+                                alert('Unauthorized1');
                             } else {
                                 alert('Internal server error! Please try again later.');
                             }
@@ -641,7 +643,7 @@ function getFriendChat() {
         },
         error: resp => {
             if (resp.status === 401) {
-                alert('Unauthorized');
+                alert('Unauthorized2');
             } else {
                 alert('Internal server error! Please try again later.');
             }

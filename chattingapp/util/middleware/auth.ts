@@ -31,7 +31,7 @@ export class AuthMiddleWare {
     public async authorizationUser(req: Request, res: Response, next: any) {
         let token;
         try {
-            token = Utils.getToken(req);
+            token = Utils.getTokenChat(req);
         } catch (err) {
             return Http.UnauthorizedResponse(res);
         }

@@ -12,7 +12,7 @@ const RoomSchema = new Schema({
         type: String,
     },
     user_rooms: [{
-        type: Number
+        type: Number,
     }],
     created_at: {
         type: Date,

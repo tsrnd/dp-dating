@@ -35,6 +35,14 @@ class Utils {
         }
         throw new Error('Token invalid');
     }
+
+    public getTokenChat (req: Request): string {
+        const authorization = req.header('chat_token');
+        if (authorization.startsWith('Bearer ')) {
+            return authorization.substring(7);
+        }
+        throw new Error('Token invalid');
+    }
 }
 
 export default new Utils;

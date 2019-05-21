@@ -42,9 +42,6 @@ function registerFpopup(id) {
         <div class="popup-messages-friend-list">
         </div>
     </div>`;
-    if (localStorage.authToken) {
-        // getFriendChat();
-    }
     $('body').append(element);
     Fpopups.unshift(id);
     calculateFpopups();

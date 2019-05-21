@@ -33,7 +33,7 @@ function hiddenPopup(id) {
     }
 }
 
-function register_popup(id, name) {
+function register_popup(id, name, room_id) {
     for (var iii = 0; iii < popups.length; iii++) {
         //already registered. Bring it to front.
         if (id == popups[iii]) {

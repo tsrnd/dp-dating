@@ -19,18 +19,17 @@ const auth = (req: Request, res: Response, next: () => void) => {
         User.findByPk(decoded['id'], {
             attributes: ['id']
         })
-            .then(user => {
-                if (!user) {
-                    return Http.UnauthorizedResponse(res);
-                }
-                // set auth id
-                req.headers.auth_user = user.dataValues;
-                return next();
-            })
-            .catch(err => {
-                console.error(err);
-                return Http.InternalServerResponse(res);
-            });
+        .then(user => {
+            if (!user) {
+                return Http.UnauthorizedResponse(res);
+            }
+            // set auth id
+            req.headers.auth_user = user.dataValues;
+            return next();
+        })
+        .catch(err => {
+            return Http.InternalServerResponse(res);
+        });
     } catch (err) {
         return Http.UnauthorizedResponse(res);
     }
