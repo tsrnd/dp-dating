@@ -276,9 +276,49 @@
     padding: 6px 20px;
     cursor: pointer;
 }
+
 #avatar {
     border: 0.5px solid #ccc;
     margin-bottom: 15px;
     width: 200px;
     height: 200px;
+}
+
+.chat-message img {
+    width: 25px;
+    height: 25px;
+}
+
+.friends-message {
+    background-color: lightgray;
+    padding: 3px 7px 3px 1px;
+    color: black;
+    border-radius: 20px;
+    white-space: nowrap;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.self-message {
+    background-color: #333;
+    padding: 3px 7px 3px 1px;
+    color: white;
+    border-radius: 20px;
+    white-space: nowrap;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.avt-chat-message {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.chat-message {
+    margin: 10px 0px;
+}
+
+.chat-message span {
+    width: 100px;
 }

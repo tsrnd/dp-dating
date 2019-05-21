@@ -33,7 +33,7 @@ function hiddenPopup(id) {
     }
 }
 
-function register_popup(id, name, room_id) {
+function register_popup(id, name, room_id, profile_image) {
     for (var iii = 0; iii < popups.length; iii++) {
         //already registered. Bring it to front.
         if (id == popups[iii]) {
@@ -43,11 +43,14 @@ function register_popup(id, name, room_id) {
             return;
         }
     }
+    userInfo = JSON.parse(localStorage.authInfo);
     // popups.unshift(id);
     var element = `
     <div class="popup-box" id="${id}">
         <div class="popup-head" id="btn-popup-head" onclick="hiddenPopup(${id});">
-            <div class="popup-head-left">${name}</div>
+            <div class="popup-head-left">
+                <img class='friend-profile-picture rounded-circle' src='${profile_image}'> ${name}
+            </div>
             <div class="popup-head-right">
                 <a href="javascript:closePopup('${id}');">&#10005;</a>
             </div>
@@ -57,6 +60,45 @@ function register_popup(id, name, room_id) {
         </div>
         <input class="popup-input" type="text" id='input-${id}' />
     </div>`;
+    
+    $.get({
+        url: 'http://localhost:3002/api/messages/'+room_id+'?limit=10&since_id=0',
+        headers: {
+            'chat_token': 'Bearer ' + localStorage.tokenChat 
+        },
+        success: resp => {
+            let content = '';
+            value = JSON.parse(resp);
+            if (value.length > 0) {
+                value.forEach(element => {
+                    if (userInfo.id == element.user_id) {
+                        content =
+                            `<div class="chat-message" style="text-align:right;">
+                                <span class=" self-message">${
+                                    element.message
+                                }</span>
+                            </div>` + content;
+                    } else {
+                        content =
+                            `<div class="chat-message">
+                                <img class='avt-chat-message' src="${profile_image}" onmouseover="showName('${name}')" id='${name}'/>
+                                <span class="friends-message">${
+                                    element.message
+                                }</span>
+                            </div>` + content;
+                    }
+                });
+                $(`#popup-messages-${id}`).html(content);
+                $(`#popup-messages-${id}`).animate(
+                    { scrollTop: $(`#popup-messages-${id}`).prop('scrollHeight') },
+                    500
+                );
+            }
+        },
+        error: resp => {
+            console.log(resp.status);
+        }
+    });
     $('body').append(element);
     popups.unshift(id);
     calculate_popups();
@@ -95,6 +137,11 @@ function calculate_popups() {
 
     display_popups();
 }
+
+function showName(name) {
+    $('#'+name).addClass("tooltip");
+    console.log('1');
+};
 
 //recalculate when window is loaded and also when window is resized.
 window.addEventListener('resize', calculate_popups);
