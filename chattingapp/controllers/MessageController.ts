@@ -60,7 +60,7 @@ export class MessageController {
                     { room_id: Types.ObjectId(roomID) },
                     cond
                 ]
-            }).limit(parseInt(limit)).sort({ created_at: -1 });
+            }).limit(parseInt(limit)).sort({ created_at: -1 }).select('-_id message user_id id');
             return Http.SuccessResponse(res, messages);
         } catch (error) {
             return Http.InternalServerResponse(res);
