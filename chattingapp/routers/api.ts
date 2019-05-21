@@ -34,6 +34,7 @@ class APIRouter {
         this.router.post('/clients/user/login', Rules.authUserLogin, this.ClientController.userLogin);
         this.router.post('/clients/user', Rules.createUser, this.ClientController.createUser);
         this.router.use('/messages', this.AuthMiddleWare.authorizationUser);
+        this.router.get('/messages/:roomID', Rules.getMessage, this.MessageController.getMessage);
         this.router.post('/messages/:roomID', Rules.sendMessage, this.MessageController.sendMessage);
         this.router.use('/users', this.AuthMiddleWare.authorizationUser);
         this.router.get('/users/rooms', this.UserController.getDirectRooms);

@@ -21,7 +21,7 @@ const MessageSchema = new Schema({
         ref: 'Room',
     },
     user_id: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Number,
         ref: 'User',
     },
     created_at: {

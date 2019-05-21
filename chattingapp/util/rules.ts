@@ -21,6 +21,10 @@ export const Rules = {
         check('id').isInt({ gt: 0 }),
         check('nickname').isLength({ min: 4, max: 16 }).matches('^[A-Za-z][A-Za-z0-9\_]*$')
     ],
+    getMessage: [
+        check('limit').isInt({ gt: 0 }),
+        check('since_id').isInt({ gt: -1 })
+    ],
     sendMessage: [
         check('message').isLength({ min: 1 })
     ]
