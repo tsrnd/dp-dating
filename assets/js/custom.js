@@ -614,6 +614,7 @@ function getFriendChat() {
             value = JSON.parse(resp);
             if (value.length > 0) {
                 $('.popup-head-left-friend-list').html(`Friend(${value.length})`);
+                $('.popup-messages-friend-list').html('');
                 value.forEach((element) => {
                     userArr = element.user_rooms
                     userArr.splice( userArr.indexOf(userInfo.id), 1)
@@ -624,6 +625,7 @@ function getFriendChat() {
                         },
                         success: data => {
                             if (data) {
+                                
                                 const friendImg = !data.profile_picture ? '/static/img/bg-img/img-default.png' : data.profile_picture
                                 $('.popup-messages-friend-list').append(`
                                     <li><a onclick="register_popup(${Number(data.id)}, '${data.nickname}', '${element._id}', '${friendImg}')"><img class='friend-profile-picture rounded-circle' src='${friendImg}'> &ensp; ${data.nickname}</a></li>

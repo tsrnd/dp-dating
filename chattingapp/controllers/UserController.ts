@@ -24,6 +24,7 @@ export class UserController {
             }).select('_id user_rooms');
             return Http.SuccessResponse(res, rooms);
         } catch (error) {
+            console.log(error);
             return Http.InternalServerResponse(res);
         }
     }

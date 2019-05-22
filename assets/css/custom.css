@@ -322,3 +322,7 @@
 .chat-message span {
     width: 100px;
 }
+
+.popup-messages-friend-list li {
+    margin-top: 10px;
+}

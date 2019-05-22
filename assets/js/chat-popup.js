@@ -1,3 +1,40 @@
+var socket = io('http://localhost:3002');
+socket.on('connect', function(socketIO) {
+    var token = localStorage.tokenChat;
+    socket.emit('authenticate', {
+        token: token
+    });
+});
+
+socket.on('loadMessage', data => {
+    content = JSON.parse(data);
+    userInfo = JSON.parse(localStorage.authInfo);
+    $.get({
+        url: '/api/user/'+content.user+'/profile',
+        headers: {
+            'Authorization': 'Bearer ' + JSON.parse(localStorage.authToken)
+        },
+        success: resp => {
+            if (resp) {
+                const friendImg = !resp.profile_picture ? '/static/img/bg-img/img-default.png' : resp.profile_picture
+                $(`#popup-messages-${content.message.roomID}`).append(`
+                    <div class="chat-message">
+                        <img class='avt-chat-message' src="${friendImg}" onmouseover="showName('${resp.nickname}')"'/>
+                        <span class="friends-message">${content.message.message}</span>
+                    </div>
+                `);
+            }
+        },
+        error: resp => {
+            if (resp.status === 401) {
+                alert('Unauthorized1');
+            } else {
+                alert('Internal server error! Please try again later.');
+            }
+        }
+    });
+});
+
 //this function can remove a array element.
 Array.remove = function(array, from, to) {
     var rest = array.slice((to || from) + 1 || array.length);
@@ -44,7 +81,6 @@ function register_popup(id, name, room_id, profile_image) {
         }
     }
     userInfo = JSON.parse(localStorage.authInfo);
-    // popups.unshift(id);
     var element = `
     <div class="popup-box" id="${id}">
         <div class="popup-head" id="btn-popup-head" onclick="hiddenPopup(${id});">
@@ -56,52 +92,16 @@ function register_popup(id, name, room_id, profile_image) {
             </div>
             <div style="clear: both"></div>
         </div>
-        <div class="popup-messages" id='popup-messages-${id}'>
+        <div class="popup-messages" id='popup-messages-${room_id}'>
         </div>
         <input class="popup-input" type="text" id='input-${id}' />
     </div>`;
-    
-    $.get({
-        url: 'http://localhost:3002/api/messages/'+room_id+'?limit=10&since_id=0',
-        headers: {
-            'chat_token': 'Bearer ' + localStorage.tokenChat 
-        },
-        success: resp => {
-            let content = '';
-            value = JSON.parse(resp);
-            if (value.length > 0) {
-                value.forEach(element => {
-                    if (userInfo.id == element.user_id) {
-                        content =
-                            `<div class="chat-message" style="text-align:right;">
-                                <span class=" self-message">${
-                                    element.message
-                                }</span>
-                            </div>` + content;
-                    } else {
-                        content =
-                            `<div class="chat-message">
-                                <img class='avt-chat-message' src="${profile_image}" onmouseover="showName('${name}')" id='${name}'/>
-                                <span class="friends-message">${
-                                    element.message
-                                }</span>
-                            </div>` + content;
-                    }
-                });
-                $(`#popup-messages-${id}`).html(content);
-                $(`#popup-messages-${id}`).animate(
-                    { scrollTop: $(`#popup-messages-${id}`).prop('scrollHeight') },
-                    500
-                );
-            }
-        },
-        error: resp => {
-            console.log(resp.status);
-        }
-    });
+
+    loadMsg(id, name, room_id, profile_image);
     $('body').append(element);
     popups.unshift(id);
     calculate_popups();
+    sendMsg(id, name, room_id, profile_image, socket);
 }
 
 //displays the popups. Displays based on the maximum number of popups that can be displayed on the current viewport width
@@ -139,9 +139,75 @@ function calculate_popups() {
 }
 
 function showName(name) {
-    $('#'+name).addClass("tooltip");
-    console.log('1');
-};
+}
+
+function sendMsg(id, name, room_id, profile_image, socket) {
+    $(`#input-${id}`).keyup(e => {
+        var input = $(`#input-${id}`);
+        var keycode = e.keyCode ? e.keyCode : e.which;
+        var inputMessage = input.val().trim();
+        if (keycode == '13' && inputMessage) {
+            socket.emit('clientSendMessage', {
+                message: inputMessage,
+                roomID: room_id
+            });
+            input.val('');
+            $(`#popup-messages-${room_id}`).append(
+                `<div class="chat-message" style="text-align:right;">
+                    <span class="self-message">${inputMessage}</span>
+                </div>`
+            );
+        }
+    });
+}
+
+function loadMsg(id, name, room_id, profile_image) {
+    $.get({
+        url:
+            'http://localhost:3002/api/messages/' +
+            room_id +
+            '?limit=10&since_id=0',
+        headers: {
+            chat_token: 'Bearer ' + localStorage.tokenChat
+        },
+        success: resp => {
+            let content = '';
+            value = JSON.parse(resp);
+            if (value.length > 0) {
+                value.forEach(element => {
+                    if (userInfo.id == element.user_id) {
+                        content =
+                            `<div class="chat-message" style="text-align:right;">
+                                <span class=" self-message">${
+                                    element.message
+                                }</span>
+                            </div>` + content;
+                    } else {
+                        content =
+                            `<div class="chat-message">
+                                <img class='avt-chat-message' src="${profile_image}"'/>
+                                <span class="friends-message">${
+                                    element.message
+                                }</span>
+                            </div>` + content;
+                    }
+                });
+                $(`#popup-messages-${room_id}`).html(content);
+                $(`#popup-messages-${room_id}`).animate(
+                    {
+                        scrollTop: $(`#popup-messages-${room_id}`).prop(
+                            'scrollHeight'
+                        )
+                    },
+                    500
+                );
+            }
+        },
+        error: resp => {
+            console.log(resp.status);
+        }
+    });
+}
 
 //recalculate when window is loaded and also when window is resized.
 window.addEventListener('resize', calculate_popups);
