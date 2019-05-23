@@ -17,7 +17,21 @@ const onSendMessage = (socket: any) => {
     });
 };
 
+const isTyping = (socket: any) => {
+    socket.on('isTyping', (data) => {
+        socket.broadcast.to(data.room).emit('userTyping', JSON.stringify({user: data.user, room: data.room}));
+    });
+};
+
+const notTyping = (socket: any) => {
+    socket.on('notTyping', (data) => {
+        socket.broadcast.to(data.room).emit('userNotTyping', JSON.stringify({user: data.user, room: data.room}));
+    });
+};
+
 export {
     joinRoomAfterSignin,
     onSendMessage,
+    isTyping,
+    notTyping
 };

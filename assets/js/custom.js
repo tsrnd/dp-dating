@@ -373,8 +373,8 @@ function checkLoginState() {
                         $('#modal-new-user-setting').modal();
                     } else {
                         getTokenChat();
+                        getFriendChat();
                     }
-                    getFriendChat();
                 },
                 error: resp => {
                     alert('Internal server error! Please try again later.');
@@ -551,7 +551,7 @@ function createUserChat() {
         },
         data: {
             id: userInfo.id,
-            nickname: userInfo.id,
+            nickname: "duocduoc"+userInfo.id,
             image_url: userInfo.profile_picture
         },
         success: resp => {
@@ -561,6 +561,7 @@ function createUserChat() {
         error: resp => {
             switch (resp.status) {
                 case 400:
+                    console.log(resp);
                     alert(resp.message)
                     break;
                 case 401:
@@ -590,6 +591,8 @@ function getTokenChat() {
             localStorage.tokenChat = response.token
         },
         error: (resp) => {
+            console.log(resp);
+            
             alert('Internal server error! Please try again later.');
         }
     });

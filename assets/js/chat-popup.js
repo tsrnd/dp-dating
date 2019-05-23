@@ -11,16 +11,51 @@ socket.on('loadMessage', data => {
     userInfo = JSON.parse(localStorage.authInfo);
     $.get({
         url: '/api/user/'+content.user+'/profile',
-        headers: {
-            'Authorization': 'Bearer ' + JSON.parse(localStorage.authToken)
-        },
         success: resp => {
             if (resp) {
                 const friendImg = !resp.profile_picture ? '/static/img/bg-img/img-default.png' : resp.profile_picture
+                register_popup(resp.id, resp.nickname, content.message.roomID, friendImg)
+                $(`#popup-messages-${content.message.roomID} .user-typing`).empty();
                 $(`#popup-messages-${content.message.roomID}`).append(`
                     <div class="chat-message">
-                        <img class='avt-chat-message' src="${friendImg}" onmouseover="showName('${resp.nickname}')"'/>
+                        <img class='avt-chat-message' src="${friendImg}"/>
                         <span class="friends-message">${content.message.message}</span>
+                    </div>
+                `);
+                $(`#popup-messages-${content.message.roomID}`).animate(
+                    {
+                        scrollTop: $(`#popup-messages-${content.message.roomID}`).offset().top
+                    },
+                    'fast'
+                );
+            }
+        },
+        error: resp => {
+            if (resp.status === 401) {
+                alert('Unauthorized1');
+            } else {
+                alert('Internal server error! Please try again later.');
+            }
+        }
+    });
+});
+
+socket.on('userTyping', data => {
+    content = JSON.parse(data);
+    $.get({
+        url: '/api/user/'+content.user+'/profile',
+        success: resp => {
+            if (resp) {
+                $(`#popup-messages-${content.room}`).animate(
+                    {
+                        scrollTop: $(`#popup-messages-${content.room}`).offset().top
+                    },
+                    'fast'
+                );
+                const friendImg = !resp.profile_picture ? '/static/img/bg-img/img-default.png' : resp.profile_picture
+                $(`#popup-messages-${content.room}`).append(`
+                    <div class="user-typing">
+                        <img class='avt-chat-message' src="${friendImg}" '/> is typing...
                     </div>
                 `);
             }
@@ -33,7 +68,14 @@ socket.on('loadMessage', data => {
             }
         }
     });
+    
 });
+
+socket.on('userNotTyping', data => {
+    content = JSON.parse(data);
+    $(`#popup-messages-${content.room} .user-typing`).empty();
+});
+
 
 //this function can remove a array element.
 Array.remove = function(array, from, to) {
@@ -95,7 +137,7 @@ function register_popup(id, name, room_id, profile_image) {
         </div>
         <div class="popup-messages" id='popup-messages-${room_id}'>
         </div>
-        <input class="popup-input" type="text" id='input-${id}' />
+        <input class="popup-input" type="text" id='input-${id}'>
     </div>`;
 
     loadMsg(id, name, room_id, profile_image);
@@ -103,6 +145,8 @@ function register_popup(id, name, room_id, profile_image) {
     popups.unshift(id);
     calculate_popups();
     sendMsg(id, name, room_id, profile_image, socket);
+    myFocusin(id, room_id);
+    myFocusout(id, room_id);
 }
 
 //displays the popups. Displays based on the maximum number of popups that can be displayed on the current viewport width
@@ -153,10 +197,17 @@ function sendMsg(id, name, room_id, profile_image, socket) {
                 roomID: room_id
             });
             input.val('');
+            myFocusout(id);
             $(`#popup-messages-${room_id}`).append(
                 `<div class="chat-message" style="text-align:right;">
                     <span class="self-message">${inputMessage}</span>
                 </div>`
+            );
+            $(`#popup-messages-${room_id}`).animate(
+                {
+                    scrollTop: $(`#popup-messages-${room_id}`).offset().top
+                },
+                'fast'
             );
         }
     });
@@ -205,8 +256,27 @@ function loadMsg(id, name, room_id, profile_image) {
             }
         },
         error: resp => {
-            console.log(resp.status);
+            alert('Internal sever error! Please try again later!');
         }
+    });
+}
+
+function myFocusin(id, room_id) {
+    userInfo = JSON.parse(localStorage.authInfo);
+    $(`#input-${id}`).focusin( () => {
+        socket.emit('isTyping', {
+            user: userInfo.id,
+            room: room_id
+        })
+    });
+}
+function myFocusout(id, room_id) {
+    userInfo = JSON.parse(localStorage.authInfo);
+    $(`#input-${id}`).focusout( () => {
+        socket.emit('notTyping', {
+            user: userInfo.id,
+            room: room_id
+        })
     });
 }
 

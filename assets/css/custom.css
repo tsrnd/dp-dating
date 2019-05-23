@@ -326,3 +326,8 @@
 .popup-messages-friend-list li {
     margin-top: 10px;
 }
+
+.user-typing {
+    /* margin-top: 35%; */
+    opacity: 0.7;
+}

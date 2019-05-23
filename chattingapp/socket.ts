@@ -28,6 +28,8 @@ class Socket {
             // handle chat
             EventHandler.joinRoomAfterSignin(socket);
             EventHandler.onSendMessage(socket);
+            EventHandler.isTyping(socket);
+            EventHandler.notTyping(socket);
         });
     }
 
