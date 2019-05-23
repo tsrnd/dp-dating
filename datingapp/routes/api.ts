@@ -57,7 +57,7 @@ router.post(
 router.post('/user/friend', middleware.auth, userController.addFriend);
 router.get('/profile', middleware.auth, userController.getUserProfile);
 router.get('/user/friend', middleware.auth, userController.getUserFriend);
-router.get('/user/:user_id/profile', middleware.auth, userController.getProfileChat);
+router.get('/user/:user_id/profile', userController.getProfileChat);
 router.post('/user', middleware.auth, myMulter.single('file'), userController.updateUserProfile);
 
 export default router;

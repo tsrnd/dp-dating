@@ -472,10 +472,9 @@ const getProfileChat = async (req: Request, res: Response) => {
         ]
     })
     .then(result => {
-        return Http.SuccessResponse(res, result);
+        return Http.SuccessResponse(res, result.dataValues);
     })
     .catch(err => {
-        console.log(err);
         return Http.InternalServerResponse(res);
     });
 };

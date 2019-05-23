@@ -374,6 +374,7 @@ function checkLoginState() {
                     } else {
                         getTokenChat();
                     }
+                    getFriendChat();
                 },
                 error: resp => {
                     alert('Internal server error! Please try again later.');
@@ -532,7 +533,6 @@ function beforeChat() {
         },
         success: resp => {
             response = JSON.parse(resp);
-            localStorage.removeItem('clientToken');
             localStorage.clientToken = response.token;
         },
         error: resp => {
@@ -541,14 +541,6 @@ function beforeChat() {
     }); 
 }
 
-function requestChatSetting() {
-    token = localStorage.clientToken;
-    $.ajaxSetup({
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-        }
-    });
-}
 
 function createUserChat() {
     userInfo = JSON.parse(localStorage.authInfo);
@@ -559,7 +551,7 @@ function createUserChat() {
         },
         data: {
             id: userInfo.id,
-            nickname: 'duocduoc',
+            nickname: userInfo.id,
             image_url: userInfo.profile_picture
         },
         success: resp => {
@@ -608,7 +600,7 @@ function getFriendChat() {
     $.get({
         url: 'http://localhost:3002/api/users/rooms',
         headers: {
-            'chat_token': 'Bearer ' + localStorage.tokenChat 
+            'chat_token': 'Bearer ' + JSON.parse(localStorage.authToken)
         },
         success: resp => {
             value = JSON.parse(resp);
@@ -620,12 +612,8 @@ function getFriendChat() {
                     userArr.splice( userArr.indexOf(userInfo.id), 1)
                     $.get({
                         url: '/api/user/'+userArr[0]+'/profile',
-                        headers: {
-                            'Authorization': 'Bearer ' + JSON.parse(localStorage.authToken)
-                        },
                         success: data => {
                             if (data) {
-                                
                                 const friendImg = !data.profile_picture ? '/static/img/bg-img/img-default.png' : data.profile_picture
                                 $('.popup-messages-friend-list').append(`
                                     <li><a onclick="register_popup(${Number(data.id)}, '${data.nickname}', '${element._id}', '${friendImg}')"><img class='friend-profile-picture rounded-circle' src='${friendImg}'> &ensp; ${data.nickname}</a></li>

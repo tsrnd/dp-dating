@@ -3,7 +3,6 @@ import * as Http from '../util/http';
 import Utils from '../util/utils';
 import { User } from '../models/User';
 import { Room } from '../models/Room';
-import * as config from 'config';
 
 export class UserController {
     public async getDirectRooms(req: Request, res: Response, next: any) {
@@ -24,7 +23,6 @@ export class UserController {
             }).select('_id user_rooms');
             return Http.SuccessResponse(res, rooms);
         } catch (error) {
-            console.log(error);
             return Http.InternalServerResponse(res);
         }
     }

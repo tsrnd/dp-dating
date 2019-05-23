@@ -1,7 +1,6 @@
 import { User } from '../models/User';
 import { Room } from '../models/Room';
 import { Message } from '../models/Message';
-import * as config from 'config';
 
 const getAuth = async (id: any, clientID: any) => {
     try {

@@ -25,7 +25,7 @@ class Socket {
         .on('authenticated', async (socket) => {
             const auth = await Helper.getAuth(socket.decoded_token.id, socket.decoded_token.client_id);
             socket.user = auth;
-
+            // handle chat
             EventHandler.joinRoomAfterSignin(socket);
             EventHandler.onSendMessage(socket);
         });

@@ -14,7 +14,7 @@
     "chat_app": {
         "jwt": {
             "expired": 86400,
-            "secret_key": "chatting"
+            "secret_key": "secret"
         }
     }
 }

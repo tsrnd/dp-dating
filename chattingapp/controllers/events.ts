@@ -17,7 +17,6 @@ const onSendMessage = (socket: any) => {
     });
 };
 
-
 export {
     joinRoomAfterSignin,
     onSendMessage,
