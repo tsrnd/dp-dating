@@ -597,6 +597,62 @@ function getTokenChat() {
         }
     });
 }
+var userOnl
+socket.on('loadusersOnl', data => {
+    userOnl = data;
+});
+
+socket.on('usersOnl', data => {
+    $.get({
+        url: 'http://localhost:3002/api/users/rooms',
+        headers: {
+            'chat_token': 'Bearer ' + JSON.parse(localStorage.authToken)
+        },
+        success: resp => {
+            value = JSON.parse(resp);
+            if (value.length > 0) {
+                value.forEach((element) => {
+                    userArr = element.user_rooms
+                    userArr.splice( userArr.indexOf(userInfo.id), 1)
+                    $(`#user-chat-${userArr[0]} .user-online`).html(`${data.indexOf(userArr[0]) > -1 ? 'online': 'offline'}`)
+                });
+            }
+        },
+        error: resp => {
+            if (resp.status === 401) {
+                alert('Unauthorized');
+            } else {
+                alert('Internal server error! Please try again later.');
+            }
+        }
+    });
+});
+
+socket.on('reusersOnl', data => {
+    $.get({
+        url: 'http://localhost:3002/api/users/rooms',
+        headers: {
+            'chat_token': 'Bearer ' + JSON.parse(localStorage.authToken)
+        },
+        success: resp => {
+            value = JSON.parse(resp);
+            if (value.length > 0) {
+                value.forEach((element) => {
+                    userArr = element.user_rooms
+                    userArr.splice( userArr.indexOf(userInfo.id), 1)
+                    $(`#user-chat-${userArr[0]} .user-online`).html(`${data.indexOf(userArr[0]) > -1 ? 'online': 'offline'}`)
+                });
+            }
+        },
+        error: resp => {
+            if (resp.status === 401) {
+                alert('Unauthorized');
+            } else {
+                alert('Internal server error! Please try again later.');
+            }
+        }
+    });
+});
 
 function getFriendChat() {
     userInfo = JSON.parse(localStorage.authInfo);
@@ -608,20 +664,18 @@ function getFriendChat() {
         success: resp => {
             value = JSON.parse(resp);
             if (value.length > 0) {
-                $('.popup-head-left-friend-list').html(`Friend(${value.length})`);
                 $('.popup-messages-friend-list').html('');
+                $('.popup-head-left-friend-list').html(`Friend(${value.length})`);
                 value.forEach((element) => {
                     userArr = element.user_rooms
                     userArr.splice( userArr.indexOf(userInfo.id), 1)
                     $.get({
                         url: '/api/user/'+userArr[0]+'/profile',
                         success: data => {
-                            if (data) {
                                 const friendImg = !data.profile_picture ? '/static/img/bg-img/img-default.png' : data.profile_picture
                                 $('.popup-messages-friend-list').append(`
-                                    <li><a onclick="register_popup(${Number(data.id)}, '${data.nickname}', '${element._id}', '${friendImg}')"><img class='friend-profile-picture rounded-circle' src='${friendImg}'> &ensp; ${data.nickname}</a></li>
+                                    <li id="user-chat-${data.id}"><a onclick="register_popup(${Number(data.id)}, '${data.nickname}', '${element._id}', '${friendImg}')"><img class='friend-profile-picture rounded-circle' src='${friendImg}'> &ensp; ${data.nickname}</a><p class='user-online'>${userOnl.indexOf(userArr[0]) > -1 ? 'online' : 'offline'}</p></li>
                                 `);
-                            }
                         },
                         error: data => {
                             if (data.status === 401) {
@@ -662,4 +716,3 @@ function createUserRoom(friendID) {
         }
     });
 }
-

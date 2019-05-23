@@ -328,6 +328,11 @@
 }
 
 .user-typing {
-    /* margin-top: 35%; */
     opacity: 0.7;
+}
+
+.user-online {
+    color: green;
+    float: right;
+    margin-top: -5px;
 }

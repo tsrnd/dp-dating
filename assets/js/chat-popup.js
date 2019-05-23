@@ -76,7 +76,6 @@ socket.on('userNotTyping', data => {
     $(`#popup-messages-${content.room} .user-typing`).empty();
 });
 
-
 //this function can remove a array element.
 Array.remove = function(array, from, to) {
     var rest = array.slice((to || from) + 1 || array.length);

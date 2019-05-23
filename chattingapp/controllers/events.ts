@@ -29,9 +29,24 @@ const notTyping = (socket: any) => {
     });
 };
 
+const listUserOnl = (socket: any, users: any) => {
+    socket.broadcast.emit('usersOnl', users);
+};
+
+const refreshListUserOnl = (socket: any, users: any) => {
+    socket.broadcast.emit('reusersOnl', users);
+};
+
+const onLoadUserOnl = (socket: any, users: any) => {
+    socket.emit('loadusersOnl', users);
+};
+
 export {
     joinRoomAfterSignin,
     onSendMessage,
     isTyping,
-    notTyping
+    notTyping,
+    listUserOnl,
+    refreshListUserOnl,
+    onLoadUserOnl
 };
