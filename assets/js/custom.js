@@ -612,9 +612,10 @@ socket.on('usersOnl', data => {
             value = JSON.parse(resp);
             if (value.length > 0) {
                 value.forEach((element) => {
-                    userArr = element.user_rooms
-                    userArr.splice( userArr.indexOf(userInfo.id), 1)
-                    $(`#user-chat-${userArr[0]} .user-online`).html(`${data.indexOf(userArr[0]) > -1 ? 'online': 'offline'}`)
+                    userArr = element.user_rooms;
+                    userArr.splice( userArr.indexOf(userInfo.id), 1);
+                    $(`#user-chat-${userArr[0]} p`).attr('class', `${data.indexOf(userArr[0]) > -1 ? 'user-online': 'user-offline'}`);
+                    $(`#${userArr[0]} div div p`).attr('class', `${data.indexOf(userArr[0]) > -1 ? 'user-online': 'user-offline'}`);
                 });
             }
         },
@@ -638,9 +639,10 @@ socket.on('reusersOnl', data => {
             value = JSON.parse(resp);
             if (value.length > 0) {
                 value.forEach((element) => {
-                    userArr = element.user_rooms
-                    userArr.splice( userArr.indexOf(userInfo.id), 1)
-                    $(`#user-chat-${userArr[0]} .user-online`).html(`${data.indexOf(userArr[0]) > -1 ? 'online': 'offline'}`)
+                    userArr = element.user_rooms;
+                    userArr.splice( userArr.indexOf(userInfo.id), 1);
+                    $(`#user-chat-${userArr[0]} p`).attr('class', `${data.indexOf(userArr[0]) > -1 ? 'user-online': 'user-offline'}`);
+                    $(`#${userArr[0]} div div p`).attr('class', `${data.indexOf(userArr[0]) > -1 ? 'user-online': 'user-offline'}`);
                 });
             }
         },
@@ -669,12 +671,13 @@ function getFriendChat() {
                 value.forEach((element) => {
                     userArr = element.user_rooms
                     userArr.splice( userArr.indexOf(userInfo.id), 1)
+                    isOnl = userOnl.indexOf(userArr[0]) > -1;
                     $.get({
                         url: '/api/user/'+userArr[0]+'/profile',
                         success: data => {
                                 const friendImg = !data.profile_picture ? '/static/img/bg-img/img-default.png' : data.profile_picture
                                 $('.popup-messages-friend-list').append(`
-                                    <li id="user-chat-${data.id}"><a onclick="register_popup(${Number(data.id)}, '${data.nickname}', '${element._id}', '${friendImg}')"><img class='friend-profile-picture rounded-circle' src='${friendImg}'> &ensp; ${data.nickname}</a><p class='user-online'>${userOnl.indexOf(userArr[0]) > -1 ? 'online' : 'offline'}</p></li>
+                                    <li id="user-chat-${data.id}"><a onclick="register_popup(${Number(data.id)}, '${data.nickname}', '${element._id}', '${friendImg}', ${isOnl})"><img class='friend-profile-picture rounded-circle' src='${friendImg}'> &ensp; ${data.nickname}</a><p class='${( isOnl ? 'user-online' : 'user-offline')}'><i class='fas fa-circle'></i></p></li>
                                 `);
                         },
                         error: data => {

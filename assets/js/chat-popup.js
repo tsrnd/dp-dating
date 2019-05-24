@@ -6,6 +6,11 @@ socket.on('connect', function(socketIO) {
     });
 });
 
+var userOnline;
+socket.on('loadusersOnl', data => {
+    userOnline = data;
+});
+
 socket.on('loadMessage', data => {
     content = JSON.parse(data);
     userInfo = JSON.parse(localStorage.authInfo);
@@ -14,7 +19,10 @@ socket.on('loadMessage', data => {
         success: resp => {
             if (resp) {
                 const friendImg = !resp.profile_picture ? '/static/img/bg-img/img-default.png' : resp.profile_picture
-                register_popup(resp.id, resp.nickname, content.message.roomID, friendImg)
+                isOnl = userOnline.indexOf(resp.id) > -1;
+                if (isOnl) {
+                    register_popup(resp.id, resp.nickname, content.message.roomID, friendImg, isOnl)
+                }
                 $(`#popup-messages-${content.message.roomID} .user-typing`).empty();
                 $(`#popup-messages-${content.message.roomID}`).append(`
                     <div class="chat-message">
@@ -111,7 +119,7 @@ function hiddenPopup(id) {
     }
 }
 
-function register_popup(id, name, room_id, profile_image) {
+function register_popup(id, name, room_id, profile_image, isOnl) {
     
     for (var iii = 0; iii < popups.length; iii++) {
         //already registered. Bring it to front.
@@ -128,6 +136,7 @@ function register_popup(id, name, room_id, profile_image) {
         <div class="popup-head" id="btn-popup-head" onclick="hiddenPopup(${id});">
             <div class="popup-head-left">
                 <img class='friend-profile-picture rounded-circle' src='${profile_image}'> ${name}
+                <p class='${isOnl ? 'user-online' : 'user-offline'}' style><i class='fas fa-circle'></i> 
             </div>
             <div class="popup-head-right">
                 <a href="javascript:closePopup('${id}');">&#10005;</a>
@@ -255,6 +264,8 @@ function loadMsg(id, name, room_id, profile_image) {
             }
         },
         error: resp => {
+            console.log(resp);
+            
             alert('Internal sever error! Please try again later!');
         }
     });

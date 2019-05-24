@@ -153,6 +153,7 @@
     font-size: 14px;
     border-radius: 4px 4px 0px 0px;
     clear: both;
+    height: 40px;
 }
 
 .popup-box .popup-head .popup-head-left {
@@ -332,7 +333,17 @@
 }
 
 .user-online {
-    color: green;
+    color: #58FA58;
     float: right;
-    margin-top: -5px;
+    margin-top: 6px;
+    font-size: 7px;
+    margin-left: 7px;
+}
+
+.user-offline {
+    color: #ddd;
+    float: right;
+    margin-top: 6px;
+    font-size: 7px;
+    margin-left: 7px;
 }
