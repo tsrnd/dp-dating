@@ -373,7 +373,7 @@ function checkLoginState() {
                         $('#modal-new-user-setting').modal();
                     } else {
                         getTokenChat();
-                        getFriendChat();
+                        location.reload(true);
                     }
                 },
                 error: resp => {
@@ -597,7 +597,8 @@ function getTokenChat() {
         }
     });
 }
-var userOnl
+
+var userOnl;
 socket.on('loadusersOnl', data => {
     userOnl = data;
 });
@@ -670,7 +671,7 @@ function getFriendChat() {
                 $('.popup-head-left-friend-list').html(`Friend(${value.length})`);
                 value.forEach((element) => {
                     userArr = element.user_rooms
-                    userArr.splice( userArr.indexOf(userInfo.id), 1)
+                    userArr.splice(userArr.indexOf(userInfo.id), 1)
                     isOnl = userOnl.indexOf(userArr[0]) > -1;
                     $.get({
                         url: '/api/user/'+userArr[0]+'/profile',
@@ -681,8 +682,8 @@ function getFriendChat() {
                                 `);
                         },
                         error: data => {
-                            if (data.status === 401) {
-                                alert('Unauthorized1');
+                            if (data.status === 404) {
+                                console.log(data);
                             } else {
                                 alert('Internal server error! Please try again later.');
                             }
