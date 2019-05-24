@@ -1,10 +1,13 @@
 $(document).ready(function() {
-    registerFpopup(0, 'Friend(4)');
+    localStorage.accountClient = 'duocnguyenc';
+    localStorage.passwordClient = 'datingapp';
+    beforeChat();
     if (localStorage.authToken) {
+        getTokenChat();
+        getFriendChat();
         authInfo();
-        requestSetting();
+        requestAppSetting();
     }
-    // register_popup(1, "Nam");
     $('.btn-discover').click(function(e) {
         e.preventDefault();
         discover();
@@ -62,8 +65,7 @@ $(document).ready(function() {
     })(document, 'script', 'facebook-jssdk');
 
     $('#btn-logout').click(() => {
-        localStorage.clear();
-        location.reload(true);
+        logout();
     });
 
     $('#btn-profile-setting').click(e => {
@@ -87,15 +89,21 @@ $(document).ready(function() {
                 );
             },
             error: resp => {
-                if (resp.status === 400) {
-                    let errors = resp.responseJSON.errors;
-                    errors.forEach(element => {
-                        $('#err-' + element.param)
-                            .html(element.msg)
-                            .show();
-                    });
-                } else {
-                    alert('Internal server error! Please try again later.');
+                switch (resp.status) {
+                    case 400:
+                        let errors = resp.responseJSON.errors;
+                        errors.forEach(element => {
+                            $('#err-' + element.param + '-setting')
+                                .html(element.msg)
+                                .show();
+                        });
+                        break;
+                    case 401:
+                        logout();
+                        break
+                    default:
+                        alert('Internal server error! Please try again later.');
+                        break;
                 }
             }
         });
@@ -119,7 +127,7 @@ $(document).ready(function() {
         fd.append('age', $('#age').val());
         fd.append('location', $('#location').val());
         fd.append('occupation', $('#occupation').val());
-        fd.append('income', $('#income').val());
+        fd.append('income_level', $('#income').val());
         fd.append('ethnic', $('#ethnic').val());
 
         $.ajax({
@@ -282,6 +290,7 @@ function setUsersDiscover(users) {
                     .delay(0)
                     .fadeOut();
                 postDiscoverItem(user.id);
+                addFriend(user.id);
 
                 discover();
             });
@@ -314,9 +323,29 @@ function postDiscoverItem(userID) {
         },
         error: e => {
             console.log(e);
+            alert('Internal server error! Please try again later.');
         }
     });
 }
+
+function addFriend(userID) {
+    $.post({
+        url: '/api/user/friend',
+        data: {
+            friend_id: userID
+        },
+        success: resp => {
+            createUserRoom(userID);
+            getFriendChat();
+        },
+        error: e => {
+            console.log(e);
+            alert('Internal server error! Please try again later.');
+        }
+    });
+    
+}
+
 function getUserDiscover(request) {
     return $.ajax({
         url: '/api/users/discover',
@@ -337,10 +366,14 @@ function checkLoginState() {
                     localStorage.authToken = JSON.stringify(resp.token);
                     localStorage.authInfo = JSON.stringify(resp.user);
                     authInfo();
-                    requestSetting();
+                    requestAppSetting();
                     $('#modal-login').modal('hide');
                     if (resp.is_new) {
+                        createUserChat();
                         $('#modal-new-user-setting').modal();
+                    } else {
+                        getTokenChat();
+                        location.reload(true);
                     }
                 },
                 error: resp => {
@@ -352,6 +385,7 @@ function checkLoginState() {
 }
 
 function authInfo() {
+    registerFpopup(0);
     userInfo = JSON.parse(localStorage.authInfo);
     $('#auth-info')
         .html(
@@ -368,6 +402,7 @@ function authInfo() {
         )
         .show();
 }
+
 function getUserProfile() {
     $.ajax({
         url: '/api/profile',
@@ -417,10 +452,16 @@ function getUserProfile() {
             );
         },
         error: resp => {
-            alert('Internal server error! Please try again later.');
+            if (resp.status === 401) {
+                logout()
+            } 
+            if (resp.status === 500) {
+                alert('Internal server error! Please try again later.');
+            }
         }
     });
 }
+
 function getListFriend() {
     $.ajax({
         url: '/api/user/friend',
@@ -428,16 +469,23 @@ function getListFriend() {
         success: function(userFriends) {
             $('#lisfriends').html('');
             userFriends.forEach(function(userFriend) {
+                const friendImg = !userFriend.profile_picture ? '/static/img/bg-img/img-default.png' : userFriend.profile_picture
                 $('#lisfriends').append(`
                     <li>
-                        <a><b>${userFriend.user.nickname}</b></a>
-                        <small>${userFriend.user.username}</small>
+                        <img class='friend-profile-picture rounded-circle' src='${friendImg}'>
+                        <a><b>${userFriend.nickname}</b></a>
+                        <small>${userFriend.username}</small>
                     </li>
                 `);
             });
         },
         error: resp => {
-            alert('Internal server error! Please try again later.');
+            if (resp.status === 401) {
+                logout()
+            } 
+            if (resp.status === 500) {
+                alert('Internal server error! Please try again later.');
+            }
         }
     });
 }
@@ -462,11 +510,213 @@ function getDetail() {
     })
 }
 
-function requestSetting() {
+function requestAppSetting() {
     token = JSON.parse(localStorage.authToken);
     $.ajaxSetup({
         beforeSend: function(xhr) {
             xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        }
+    });
+}
+
+function logout() {
+    localStorage.clear();
+    location.reload(true);
+}
+
+function beforeChat() {
+    $.post({
+        url: 'http://localhost:3002/api/auth/login',
+        data: {
+            account: localStorage.accountClient,
+            secret_key: localStorage.passwordClient
+        },
+        success: resp => {
+            response = JSON.parse(resp);
+            localStorage.clientToken = response.token;
+        },
+        error: resp => {
+            alert('Internal server error! Please try again later.');
+        }
+    }); 
+}
+
+
+function createUserChat() {
+    userInfo = JSON.parse(localStorage.authInfo);
+    $.post({
+        url: 'http://localhost:3002/api/clients/user',
+        headers: {
+            'client_id': 'Bearer '+ localStorage.clientToken
+        },
+        data: {
+            id: userInfo.id,
+            nickname: "duocduoc"+userInfo.id,
+            image_url: userInfo.profile_picture
+        },
+        success: resp => {
+            response = JSON.parse(resp);
+            localStorage.tokenChat = response.token
+        },
+        error: resp => {
+            switch (resp.status) {
+                case 400:
+                    console.log(resp);
+                    alert(resp.message)
+                    break;
+                case 401:
+                    alert(resp.message);
+                    break
+                default:
+                    alert('Internal server error! Please try again later.');
+                    break;
+            }
+        }
+    }); 
+}
+
+function getTokenChat() {
+    token = localStorage.clientToken
+    userInfo = JSON.parse(localStorage.authInfo);
+    $.post({
+        url: 'http://localhost:3002/api/clients/user/login',
+        headers: {
+          'client_id': 'Bearer ' + token
+        },
+        data: {
+            id: userInfo.id
+        },
+        success: (resp) => {
+            response = JSON.parse(resp);
+            localStorage.tokenChat = response.token
+        },
+        error: (resp) => {
+            console.log(resp);
+            
+            alert('Internal server error! Please try again later.');
+        }
+    });
+}
+
+var userOnl;
+socket.on('loadusersOnl', data => {
+    userOnl = data;
+});
+
+socket.on('usersOnl', data => {
+    $.get({
+        url: 'http://localhost:3002/api/users/rooms',
+        headers: {
+            'chat_token': 'Bearer ' + JSON.parse(localStorage.authToken)
+        },
+        success: resp => {
+            value = JSON.parse(resp);
+            if (value.length > 0) {
+                value.forEach((element) => {
+                    userArr = element.user_rooms;
+                    userArr.splice( userArr.indexOf(userInfo.id), 1);
+                    $(`#user-chat-${userArr[0]} p`).attr('class', `${data.indexOf(userArr[0]) > -1 ? 'user-online': 'user-offline'}`);
+                    $(`#${userArr[0]} div div p`).attr('class', `${data.indexOf(userArr[0]) > -1 ? 'user-online': 'user-offline'}`);
+                });
+            }
+        },
+        error: resp => {
+            if (resp.status === 401) {
+                alert('Unauthorized');
+            } else {
+                alert('Internal server error! Please try again later.');
+            }
+        }
+    });
+});
+
+socket.on('reusersOnl', data => {
+    $.get({
+        url: 'http://localhost:3002/api/users/rooms',
+        headers: {
+            'chat_token': 'Bearer ' + JSON.parse(localStorage.authToken)
+        },
+        success: resp => {
+            value = JSON.parse(resp);
+            if (value.length > 0) {
+                value.forEach((element) => {
+                    userArr = element.user_rooms;
+                    userArr.splice( userArr.indexOf(userInfo.id), 1);
+                    $(`#user-chat-${userArr[0]} p`).attr('class', `${data.indexOf(userArr[0]) > -1 ? 'user-online': 'user-offline'}`);
+                    $(`#${userArr[0]} div div p`).attr('class', `${data.indexOf(userArr[0]) > -1 ? 'user-online': 'user-offline'}`);
+                });
+            }
+        },
+        error: resp => {
+            if (resp.status === 401) {
+                alert('Unauthorized');
+            } else {
+                alert('Internal server error! Please try again later.');
+            }
+        }
+    });
+});
+
+function getFriendChat() {
+    userInfo = JSON.parse(localStorage.authInfo);
+    $.get({
+        url: 'http://localhost:3002/api/users/rooms',
+        headers: {
+            'chat_token': 'Bearer ' + JSON.parse(localStorage.authToken)
+        },
+        success: resp => {
+            value = JSON.parse(resp);
+            if (value.length > 0) {
+                $('.popup-messages-friend-list').html('');
+                $('.popup-head-left-friend-list').html(`Friend(${value.length})`);
+                value.forEach((element) => {
+                    userArr = element.user_rooms
+                    userArr.splice(userArr.indexOf(userInfo.id), 1)
+                    isOnl = userOnl.indexOf(userArr[0]) > -1;
+                    $.get({
+                        url: '/api/user/'+userArr[0]+'/profile',
+                        success: data => {
+                                const friendImg = !data.profile_picture ? '/static/img/bg-img/img-default.png' : data.profile_picture
+                                $('.popup-messages-friend-list').append(`
+                                    <li id="user-chat-${data.id}"><a onclick="register_popup(${Number(data.id)}, '${data.nickname}', '${element._id}', '${friendImg}', ${isOnl})"><img class='friend-profile-picture rounded-circle' src='${friendImg}'> &ensp; ${data.nickname}</a><p class='${( isOnl ? 'user-online' : 'user-offline')}'><i class='fas fa-circle'></i></p></li>
+                                `);
+                        },
+                        error: data => {
+                            if (data.status === 404) {
+                                console.log(data);
+                            } else {
+                                alert('Internal server error! Please try again later.');
+                            }
+                        }
+                    });
+                });
+            }
+        },
+        error: resp => {
+            if (resp.status === 401) {
+                alert('Unauthorized2');
+            } else {
+                alert('Internal server error! Please try again later.');
+            }
+        }
+    });
+}
+
+function createUserRoom(friendID) {
+    userInfo = JSON.parse(localStorage.authInfo);
+    $.post({
+        url: 'http://localhost:3002/api/clients/room',
+        headers: {
+            'client_id': 'Bearer ' + localStorage.clientToken
+        },
+        data: {
+            user_id: userInfo.id,
+            friend_id: friendID
+        },
+        success: resp => {
+        },
+        error: resp => {
+            alert(resp.msg)
         }
     });
 }

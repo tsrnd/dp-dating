@@ -21,7 +21,7 @@ function hiddenFPopup(id) {
     }
 }
 
-function registerFpopup(id, name) {
+function registerFpopup(id) {
     for (var iii = 0; iii < Fpopups.length; iii++) {
         //already registered. Bring it to front.
         if (id == Fpopups[iii]) {
@@ -31,20 +31,15 @@ function registerFpopup(id, name) {
             return;
         }
     }
-    // popups.unshift(id);
     var element = `
     <div class="popup-box-friend-list" id="${id}">
         <div class="popup-head-friend-list" id="btn-popup-head-friend-list" onclick="hiddenFPopup(${id});">
-            <div class="popup-head-left-friend-list">${name}</div>
+            <div class="popup-head-left-friend-list">Friend</div>
             <div class="popup-head-right-friend-list">
             </div>
             <div style="clear: both"></div>
         </div>
         <div class="popup-messages-friend-list">
-            <li><a onclick="register_popup(1,'Username1')"><i class="fa fa-user"></i> &ensp; Username 1</a></li>
-            <li><a onclick="register_popup(2,'Username2')"><i class="fa fa-user"></i> &ensp; Username 2</a></li>
-            <li><a onclick="register_popup(3,'Username3')"><i class="fa fa-user"></i> &ensp; Username 3</a></li>
-            <li><a onclick="register_popup(4,'Username4')"><i class="fa fa-user"></i> &ensp; Username 4</a></li>
         </div>
     </div>`;
     $('body').append(element);

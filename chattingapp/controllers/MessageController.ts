@@ -9,37 +9,12 @@ import * as config from 'config';
 import { Types } from 'mongoose';
 
 export class MessageController {
-    public async sendMessage(req: Request, res: Response, next: any) {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return Http.BadRequestResponse(res, { errors: errors.array() });
-        }
-        const roomID = req.params.roomID;
-        const token = Utils.getToken(req);
-        const decoded = Utils.jwtVerify(token);
-        const contentMessage = req.body.message;
-        try {
-            const room = await Room.findOne({ _id: roomID, 'user_rooms': decoded.id });
-            if (!room) {
-                return Http.NotFoundResponse(res, { message: 'Room is not found' });
-            }
-            const message = new Message({
-                message: contentMessage,
-                user_id: decoded.id,
-                room_id: roomID
-            });
-            message.save();
-            return Http.SuccessResponse(res);
-        } catch (error) {
-            return Http.InternalServerResponse(res);
-        }
-    }
     public async getMessage(req: Request, res: Response, next: any) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return Http.BadRequestResponse(res, { errors: errors.array() });
         }
-        const token = Utils.getToken(req);
+        const token = Utils.getTokenChat(req);
         const decoded = Utils.jwtVerify(token);
         const roomID = req.params.roomID;
         const limit = req.query.limit;

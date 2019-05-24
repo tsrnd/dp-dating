@@ -48,7 +48,7 @@ const UserSchema = new Schema({
 UserSchema.pre('save', async function(next) {
     let client;
     try {
-        client = await Client.findOne({ _id: this.client_id});
+        client = await Client.findOne({ _id: this.client_id });
     } catch (err) {
         throw new Error('Client.findOne() error');
     }

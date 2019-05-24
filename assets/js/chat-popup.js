@@ -1,3 +1,89 @@
+var socket = io('http://localhost:3002');
+socket.on('connect', function(socketIO) {
+    var token = localStorage.tokenChat;
+    socket.emit('authenticate', {
+        token: token
+    });
+});
+
+var userOnline;
+socket.on('loadusersOnl', data => {
+    userOnline = data;
+});
+
+socket.on('loadMessage', data => {
+    content = JSON.parse(data);
+    userInfo = JSON.parse(localStorage.authInfo);
+    $.get({
+        url: '/api/user/'+content.user+'/profile',
+        success: resp => {
+            if (resp) {
+                const friendImg = !resp.profile_picture ? '/static/img/bg-img/img-default.png' : resp.profile_picture
+                isOnl = userOnline.indexOf(resp.id) > -1;
+                if (isOnl) {
+                    register_popup(resp.id, resp.nickname, content.message.roomID, friendImg, isOnl)
+                }
+                $(`#popup-messages-${content.message.roomID} .user-typing`).empty();
+                $(`#popup-messages-${content.message.roomID}`).append(`
+                    <div class="chat-message">
+                        <img class='avt-chat-message' src="${friendImg}"/>
+                        <span class="friends-message">${content.message.message}</span>
+                    </div>
+                `);
+                $(`#popup-messages-${content.message.roomID}`).animate(
+                    {
+                        scrollTop: $(`#popup-messages-${content.message.roomID}`).offset().top
+                    },
+                    'fast'
+                );
+            }
+        },
+        error: resp => {
+            if (resp.status === 404) {
+                console.log(resp);
+            } else {
+                alert('Internal server error! Please try again later.');
+            }
+        }
+    });
+});
+
+socket.on('userTyping', data => {
+    content = JSON.parse(data);
+    $.get({
+        url: '/api/user/'+content.user+'/profile',
+        success: resp => {
+            if (resp) {
+                $(`#popup-messages-${content.room}`).animate(
+                    {
+                        scrollTop: $(`#popup-messages-${content.room}`).offset().top
+                    },
+                    'fast'
+                );
+                const friendImg = !resp.profile_picture ? '/static/img/bg-img/img-default.png' : resp.profile_picture
+                $(`#popup-messages-${content.room}`).append(`
+                    <div class="user-typing">
+                        <img class='avt-chat-message' src="${friendImg}" '/> is typing...
+                    </div>
+                `);
+            }
+        },
+        error: resp => {
+            if (resp.status === 404) {
+                console.log(resp);
+            } else {
+                alert('Internal server error! Please try again later.');
+            }
+        }
+    });
+    
+});
+
+socket.on('userNotTyping', data => {
+    content = JSON.parse(data);
+    $(`#popup-messages-${content.room} .user-typing`).empty();
+});
+
 //this function can remove a array element.
 Array.remove = function(array, from, to) {
     var rest = array.slice((to || from) + 1 || array.length);
@@ -33,7 +119,8 @@ function hiddenPopup(id) {
     }
 }
 
-function register_popup(id, name) {
+function register_popup(id, name, room_id, profile_image, isOnl) {
+    
     for (var iii = 0; iii < popups.length; iii++) {
         //already registered. Bring it to front.
         if (id == popups[iii]) {
@@ -43,23 +130,31 @@ function register_popup(id, name) {
             return;
         }
     }
-    // popups.unshift(id);
+    userInfo = JSON.parse(localStorage.authInfo);
     var element = `
     <div class="popup-box" id="${id}">
         <div class="popup-head" id="btn-popup-head" onclick="hiddenPopup(${id});">
-            <div class="popup-head-left">${name}</div>
+            <div class="popup-head-left">
+                <img class='friend-profile-picture rounded-circle' src='${profile_image}'> ${name}
+                <p class='${isOnl ? 'user-online' : 'user-offline'}' style><i class='fas fa-circle'></i> 
+            </div>
             <div class="popup-head-right">
                 <a href="javascript:closePopup('${id}');">&#10005;</a>
             </div>
             <div style="clear: both"></div>
         </div>
-        <div class="popup-messages" id='popup-messages-${id}'>
+        <div class="popup-messages" id='popup-messages-${room_id}'>
         </div>
-        <input class="popup-input" type="text" id='input-${id}' />
+        <input class="popup-input" type="text" id='input-${id}'>
     </div>`;
+
+    loadMsg(id, name, room_id, profile_image);
     $('body').append(element);
     popups.unshift(id);
     calculate_popups();
+    sendMsg(id, name, room_id, profile_image, socket);
+    myFocusin(id, room_id);
+    myFocusout(id, room_id);
 }
 
 //displays the popups. Displays based on the maximum number of popups that can be displayed on the current viewport width
@@ -94,6 +189,105 @@ function calculate_popups() {
     }
 
     display_popups();
+}
+
+function showName(name) {
+}
+
+function sendMsg(id, name, room_id, profile_image, socket) {
+    $(`#input-${id}`).keyup(e => {
+        var input = $(`#input-${id}`);
+        var keycode = e.keyCode ? e.keyCode : e.which;
+        var inputMessage = input.val().trim();
+        if (keycode == '13' && inputMessage) {
+            socket.emit('clientSendMessage', {
+                message: inputMessage,
+                roomID: room_id
+            });
+            input.val('');
+            myFocusout(id);
+            $(`#popup-messages-${room_id}`).append(
+                `<div class="chat-message" style="text-align:right;">
+                    <span class="self-message">${inputMessage}</span>
+                </div>`
+            );
+            $(`#popup-messages-${room_id}`).animate(
+                {
+                    scrollTop: $(`#popup-messages-${room_id}`).offset().top
+                },
+                'fast'
+            );
+        }
+    });
+}
+
+function loadMsg(id, name, room_id, profile_image) {
+    $.get({
+        url:
+            'http://localhost:3002/api/messages/' +
+            room_id +
+            '?limit=10&since_id=0',
+        headers: {
+            chat_token: 'Bearer ' + localStorage.tokenChat
+        },
+        success: resp => {
+            let content = '';
+            value = JSON.parse(resp);
+            if (value.length > 0) {
+                value.forEach(element => {
+                    if (userInfo.id == element.user_id) {
+                        content =
+                            `<div class="chat-message" style="text-align:right;">
+                                <span class=" self-message">${
+                                    element.message
+                                }</span>
+                            </div>` + content;
+                    } else {
+                        content =
+                            `<div class="chat-message">
+                                <img class='avt-chat-message' src="${profile_image}"'/>
+                                <span class="friends-message">${
+                                    element.message
+                                }</span>
+                            </div>` + content;
+                    }
+                });
+                $(`#popup-messages-${room_id}`).html(content);
+                $(`#popup-messages-${room_id}`).animate(
+                    {
+                        scrollTop: $(`#popup-messages-${room_id}`).prop(
+                            'scrollHeight'
+                        )
+                    },
+                    500
+                );
+            }
+        },
+        error: resp => {
+            console.log(resp);
+            
+            alert('Internal sever error! Please try again later!');
+        }
+    });
+}
+
+function myFocusin(id, room_id) {
+    userInfo = JSON.parse(localStorage.authInfo);
+    $(`#input-${id}`).focusin( () => {
+        socket.emit('isTyping', {
+            user: userInfo.id,
+            room: room_id
+        })
+    });
+}
+function myFocusout(id, room_id) {
+    userInfo = JSON.parse(localStorage.authInfo);
+    $(`#input-${id}`).focusout( () => {
+        socket.emit('notTyping', {
+            user: userInfo.id,
+            room: room_id
+        })
+    });
 }
 
 //recalculate when window is loaded and also when window is resized.

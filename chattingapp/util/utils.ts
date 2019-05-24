@@ -27,6 +27,22 @@ class Utils {
         this.jwt_expired = configJwt.expired;
         this.jwt_secret = configJwt.secret_key;
     }
+
+    public getTokenClient (req: Request): string {
+        const authorization = req.header('client_id');
+        if (authorization.startsWith('Bearer ')) {
+            return authorization.substring(7);
+        }
+        throw new Error('Token invalid');
+    }
+
+    public getTokenChat (req: Request): string {
+        const authorization = req.header('chat_token');
+        if (authorization.startsWith('Bearer ')) {
+            return authorization.substring(7);
+        }
+        throw new Error('Token invalid');
+    }
 }
 
 export default new Utils;

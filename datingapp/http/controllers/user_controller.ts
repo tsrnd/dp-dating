@@ -12,6 +12,7 @@ import { FacebookUsers } from '../../models/facebook_user';
 import { Op } from 'sequelize';
 import { validationResult } from 'express-validator/check';
 import { DiscoverSetting } from '../../models/discover_setting';
+import DB from '../../util/db';
 import { Client } from 'minio';
 
 const getProfileFB = (req: Request, resp: Response) => {
@@ -53,7 +54,7 @@ const getProfileFB = (req: Request, resp: Response) => {
                 ).catch(err => {
                     return Http.InternalServerResponse(resp);
                 });
-                resp.json({
+                return Http.SuccessResponse(resp, {
                     token: generateToken(socialUser.dataValues.user_id),
                     user: userProfile.dataValues,
                     is_new: false
@@ -74,7 +75,7 @@ const getProfileFB = (req: Request, resp: Response) => {
                         id: profile.id,
                         access_token: req.body.access_token
                     });
-                    resp.json({
+                    return Http.SuccessResponse(resp, {
                         token: generateToken(newUser.id),
                         user: newUser,
                         is_new: true
@@ -112,6 +113,7 @@ const postUsersDiscoverSetting = async (req: Request, resp: Response) => {
 const getUsersDiscoverSetting = async (req: Request, resp: Response) => {
     try {
         const result = await DiscoverSetting.findOne({
+            attributes: ['id', 'user_id', 'request'],
             where: {
                 user_id: req.headers.auth_user['id']
             },
@@ -126,6 +128,7 @@ const getUsersDiscoverSetting = async (req: Request, resp: Response) => {
         return Http.NotFoundResponse(resp);
     } catch (error) {
         console.log(error);
+        return Http.InternalServerResponse(resp);
     }
 };
 
@@ -256,41 +259,57 @@ const postUserDiscover = async (req: Request, res: Response) => {
         return Http.InternalServerResponse(res);
     }
 };
+
 const getUserProfile = async (req: Request, res: Response) => {
     const userID = req.headers.auth_user['id'];
     User.findOne({
         where: {
             id: userID
-        }
+        },
+        attributes: [
+            'id',
+            'username',
+            'nickname',
+            'profile_picture',
+            'age',
+            'gender',
+            'location',
+            'income_level',
+            'occupation',
+            'ethnic'
+        ]
     })
-        .then(result => {
-            return res.json(result);
-        })
-        .catch(err => {
-            return Http.InternalServerResponse(res);
-        });
+    .then(result => {
+        return Http.SuccessResponse(res, result);
+    })
+    .catch(err => {
+        return Http.InternalServerResponse(res);
+    });
 };
 
 const getUserFriend = async (req: Request, res: Response) => {
     const userID = req.headers.auth_user['id'];
-    UserFriends.findAll({
-        where: {
-            user_id: userID,
-            status: 1
-        },
-        include: [
-            {
-                model: User,
-                where: {}
-            }
-        ]
+    DB.query({
+        query: `
+        SELECT "user"."id", "user"."username", "user"."nickname", "user"."profile_picture"
+            FROM "users" as "user"
+            INNER JOIN (
+                SELECT "user_friends"."friend_id"
+                FROM "user_friends"
+                WHERE "user_friends"."user_id" = ? AND "user_friends"."status" = 1
+                UNION
+                SELECT "user_friends"."user_id"
+                FROM "user_friends"
+                WHERE "user_friends"."friend_id" = ? AND "user_friends"."status" = 1
+            ) as "friends" ON "friends"."friend_id" = "user"."id" ORDER BY "friends"."friend_id" DESC LIMIT ?;`,
+        values: [userID, userID, 5]
     })
-        .then(result => {
-            return res.json(result);
-        })
-        .catch(err => {
-            return Http.InternalServerResponse(res);
-        });
+    .then(result => {
+        return Http.SuccessResponse(res, result[0]);
+    })
+    .catch(err => {
+        return Http.InternalServerResponse(res);
+    });
 };
 
 const profileSetting = (req: Request, resp: Response) => {
@@ -304,22 +323,21 @@ const profileSetting = (req: Request, resp: Response) => {
             id: userID
         }
     })
-        .then(result => {
-            return Http.SuccessResponse(resp, {
-                msg: 'Update profile setting success!'
-            });
-        })
-        .catch(err => {
-            return Http.InternalServerResponse(resp);
+    .then(result => {
+        return Http.SuccessResponse(resp, {
+            msg: 'Update profile setting success!'
         });
+    })
+    .catch(err => {
+        return Http.InternalServerResponse(resp);
+    });
 };
 
 const addFriend = async (req: Request, res: Response) => {
     const userID = req.headers.auth_user['id'];
     try {
-        const friend = await User.findOne({
+        const friend = await User.findByPk( req.body.friend_id, {
             attributes: ['id'],
-            where: { username: req.body.username }
         });
         if (friend == undefined) {
             return Http.NotFoundResponse(res, {
@@ -440,6 +458,30 @@ const updateUserProfile = async (req: Request, res: Response) => {
         updateUser();
     }
 };
+
+const getProfileChat = async (req: Request, res: Response) => {
+    const userID = req.params.user_id;
+    User.findOne({
+        where: {
+            id: userID
+        },
+        attributes: [
+            'id',
+            'nickname',
+            'profile_picture',
+        ]
+    })
+    .then(result => {
+        if (!result) {
+            return Http.NotFoundResponse(res);
+        }
+        return Http.SuccessResponse(res, result.dataValues);
+    })
+    .catch(err => {
+        return Http.InternalServerResponse(res);
+    });
+};
+
 export {
     getProfileFB,
     profileSetting,
@@ -450,5 +492,6 @@ export {
     getUserProfile,
     getUserFriend,
     addFriend,
-    updateUserProfile
+    updateUserProfile,
+    getProfileChat
 };

@@ -7,18 +7,16 @@ export class AuthMiddleWare {
     public async authorizationClient(req: Request, res: Response, next: any) {
         let token;
         try {
-            token = Utils.getToken(req);
+            token = Utils.getTokenClient(req);
         } catch (err) {
             return Http.UnauthorizedResponse(res);
         }
-
         let decoded;
         try {
             decoded = Utils.jwtVerify(token);
         } catch (err) {
             return Http.UnauthorizedResponse(res);
         }
-
         try {
             const client = await Client.findOne({ '_id': decoded.id });
             if (!client) {
@@ -33,7 +31,7 @@ export class AuthMiddleWare {
     public async authorizationUser(req: Request, res: Response, next: any) {
         let token;
         try {
-            token = Utils.getToken(req);
+            token = Utils.getTokenChat(req);
         } catch (err) {
             return Http.UnauthorizedResponse(res);
         }

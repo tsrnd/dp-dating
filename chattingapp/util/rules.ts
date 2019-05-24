@@ -27,5 +27,9 @@ export const Rules = {
     ],
     sendMessage: [
         check('message').isLength({ min: 1 })
+    ],
+    createUserRoom: [
+        check('user_id').isInt({ gt: 0 }),
+        check('friend_id').isInt({ gt: 0 })
     ]
 };

@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as morgan from 'morgan';
 import APIRouter from './routers/api';
 import DBConnection from './util/db';
+import * as cors from 'cors';
 
 class App {
     private app: express.Application;
@@ -28,6 +29,7 @@ class App {
             })
         );
         this.app.use(morgan('combined'));
+        this.app.use(cors());
     };
 
     private setupRouter = () => {
