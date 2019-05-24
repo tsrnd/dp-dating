@@ -39,8 +39,8 @@ socket.on('loadMessage', data => {
             }
         },
         error: resp => {
-            if (resp.status === 401) {
-                alert('Unauthorized1');
+            if (resp.status === 404) {
+                console.log(resp);
             } else {
                 alert('Internal server error! Please try again later.');
             }
@@ -69,8 +69,8 @@ socket.on('userTyping', data => {
             }
         },
         error: resp => {
-            if (resp.status === 401) {
-                alert('Unauthorized1');
+            if (resp.status === 404) {
+                console.log(resp);
             } else {
                 alert('Internal server error! Please try again later.');
             }

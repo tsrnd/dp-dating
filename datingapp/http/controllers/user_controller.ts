@@ -473,7 +473,7 @@ const getProfileChat = async (req: Request, res: Response) => {
     })
     .then(result => {
         if (!result) {
-            return Http.UnauthorizedResponse(res);
+            return Http.NotFoundResponse(res);
         }
         return Http.SuccessResponse(res, result.dataValues);
     })
